@@ -5,16 +5,17 @@ import React from 'react';
 
 
 
-export default function Cadastrar() {
+export default function Login() {
     const [name, setName] = React.useState('');
     const [email, setEmail] = React.useState('');
     const [senha, setSenha] = React.useState('');
 
     return (
         <ImageBackground style={styles.container} source={require('../../assets/img/gradient2.png')} resizeMode="stretch">
-            <Link style={styles.link} href={'/enter'}><Image style={styles.logo} source={require('../../assets/img/villa-logo-img.png')} /></Link>
+            <Link style={styles.link}  href={'/enter'}><Image style={styles.logo} source={require('../../assets/img/villa-logo-img.png')} /></Link>
+
             <View style={styles.container_input}>
-                <Text style={styles.title}>Cadastro</Text>
+                <Text style={styles.title}>Login</Text>
                 {/*Campo Nome*/}
                 <View>
                     <TextInput
@@ -23,18 +24,6 @@ export default function Cadastrar() {
                         placeholderTextColor={'rgba(55, 90, 118, 0.5)'}
                         value={name}
                         onChangeText={setName}
-                    />
-                </View>
-
-                {/*Campo Email*/}
-                <View>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Email"
-                        placeholderTextColor={'rgba(55, 90, 118, 0.5)'}
-                        value={email}
-                        onChangeText={setEmail}
-                        keyboardType="email-address"
                     />
                 </View>
 
@@ -52,11 +41,11 @@ export default function Cadastrar() {
 
                 {/*Botão*/}
                 <Link href={'/'} style={styles.link}>
-                    <Text style={styles.btn}>Cadastrar</Text>
+                    <Text style={styles.btn}>Entrar</Text>
                 </Link>
             </View>
 
-            <Text style={styles.text}>Já possui uma conta? <Link href={'/login'} style={styles.link_text}>Faça Login!</Link></Text>
+            <Text style={styles.text}>Não possui uma conta? <Link href={'/cadastrar'} style={styles.link_text}>Cadastre-se!</Link></Text>
 
         </ImageBackground>
 
@@ -94,7 +83,7 @@ const styles = StyleSheet.create({
     container_input: {
         display: 'flex',
         gap: 30,
-        marginBottom: 60
+        marginBottom: 120
     },
     title: {
         color: '#375A76',

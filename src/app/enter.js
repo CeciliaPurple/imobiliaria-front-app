@@ -4,7 +4,7 @@ import { Link } from "expo-router"
 
 
 
-export default function Home() {
+export default function Enter() {
     return (
         <ImageBackground style={styles.container} source={require('../../assets/img/gradient2.png')} resizeMode="stretch">
             <View style={styles.container_logo}>
@@ -13,8 +13,8 @@ export default function Home() {
             </View>
 
             <View style={styles.container_group}>
-                <Link href={'/'} style={styles.link}>
-                    <Text style={styles.btn}>Entrar</Text>
+                <Link href={'/login'} style={styles.link}>
+                    <Text style={styles.btn}>Iniciar</Text>
                 </Link>
 
                 <Text style={styles.text}>Não possui uma conta? <Link href={'/cadastrar'} style={styles.link_text}>Cadastre-se!</Link></Text>
