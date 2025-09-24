@@ -1,18 +1,54 @@
 import { Text, StyleSheet, ImageBackground, View, TextInput } from "react-native"
 import { Image } from "expo-image"
 import { Link } from "expo-router"
+import React from 'react';
 
 
 
 export default function Home() {
+    const [name, setName] = React.useState('');
+    const [email, setEmail] = React.useState('');
+    const [senha, setSenha] = React.useState('');
+    const [estaFocado, setFocus] = React.useState(false);
+
     return (
         <ImageBackground style={styles.container} source={require('../../assets/img/gradient2.png')} resizeMode="stretch">
             <Image style={styles.logo} source={require('../../assets/img/villa-logo-img.png')} />
 
-            <View>
-                <Text>Cadastro</Text>
+            <View style={styles.container_input}>
+                <Text style={styles.title}>Cadastro</Text>
+                {/*Campo Nome*/}
                 <View>
-                    <TextInput />
+                    <TextInput 
+                    style={[styles.input, estaFocado ? styles.inputFocado : null]}
+                    placeholder="Nome de usuário"
+                    onFocus={() => setFocus(true)}
+                    onBlur={() => setFocus(false)}
+                    value={name}
+                    onChangeText={setName}
+                    />
+                </View>
+
+                {/*Campo Email*/}
+                <View>
+                    <TextInput 
+                    style={styles.input}
+                    placeholder="Email"
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    />
+                </View>
+
+                {/*Campo Senha*/}
+                <View>
+                    <TextInput 
+                    style={styles.input}
+                    placeholder="Senha"
+                    value={senha}
+                    onChangeText={setSenha}
+                    secureTextEntry={true}
+                    />
                 </View>
             </View>
 
@@ -56,6 +92,27 @@ const styles = StyleSheet.create({
     logo: {
         width: 75,
         height: 75
+    },
+    container_input: {
+        display: 'flex',
+        gap: 30
+    },
+    title: {
+        color: '#375A76',
+        fontSize: 24,
+        marginBottom: 10
+    },
+    input: {
+        borderBottomWidth: 2,
+        borderBottomColor: '#146FBA',
+        borderRadius: 10,
+        color: 'rgba(55, 90, 118, 0.5)',
+        padding: 5,
+        width: '70vw',
+        
+    },
+    inputFocado: {
+        borderBottomColor: 'transparent'
     },
     container_group: {
         display: 'flex',
