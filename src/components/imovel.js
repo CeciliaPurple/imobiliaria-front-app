@@ -30,19 +30,19 @@ export default function Imovel() {
       {/* Infos do imóvel */}
       <View style={styles.info}>
         <View style={styles.infoItem}>
-          <Ionicons name="home-outline" size={16} color="#555" />
+          <Ionicons name="home-outline" size={16} color="#375A76" />
           <Text style={styles.infoText}>000m²</Text>
         </View>
         <View style={styles.infoItem}>
-          <Ionicons name="bed-outline" size={16} color="#555" />
+          <Ionicons name="bed-outline" size={16} color="#375A76" />
           <Text style={styles.infoText}>0</Text>
         </View>
         <View style={styles.infoItem}>
-          <Ionicons name="water-outline" size={16} color="#555" />
+          <Ionicons name="water-outline" size={16} color="#375A76" />
           <Text style={styles.infoText}>0</Text>
         </View>
         <View style={styles.infoItem}>
-          <Ionicons name="car-outline" size={16} color="#555" />
+          <Ionicons name="car-outline" size={16} color="#375A76" />
           <Text style={styles.infoText}>0</Text>
         </View>
       </View>
@@ -60,10 +60,8 @@ export default function Imovel() {
 
 const styles = StyleSheet.create({
   card: {
-    left:60,
-    top:30,
-    width: 320,
-    borderRadius: 12,
+    width: 300,
+    borderRadius: 10,
     backgroundColor: "#fff",
     overflow: "hidden",
     elevation: 4,
@@ -71,7 +69,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
-  },
+  }, 
   imgContainer: {
     width: "100%",
     height: 200,
@@ -100,10 +98,12 @@ const styles = StyleSheet.create({
   },
   info: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    paddingVertical: 10,
+    justifyContent: "start",
+    gap: 20,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
     borderTopWidth: 1,
-    borderTopColor: "#eee",
+    borderTopColor: "#E4EBF1",
   },
   infoItem: {
     flexDirection: "row",
@@ -111,22 +111,24 @@ const styles = StyleSheet.create({
   },
   infoText: {
     marginLeft: 4,
-    color: "#555",
+    color: "#375A76",
     fontSize: 14,
+    fontWeight: 500,
   },
   footer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: 12,
+    paddingBottom: 10,
+    paddingHorizontal: 20,
     alignItems: "center",
   },
   price: {
     fontWeight: "bold",
     fontSize: 16,
-    color: "#000",
+    color: "#375A76",
   },
   button: {
-    backgroundColor: "#1e90ff",
+    backgroundColor: "#146FBA",
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 6,
