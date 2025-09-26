@@ -1,8 +1,5 @@
 import react from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput } from "react-native";
-import { ImageBackground } from "react-native";
-import { Image } from "expo-image";
-import { Link } from "expo-router";
+import { View, Text, StyleSheet, ScrollView, TextInput } from "react-native";
 import Topo from "../components/Topo";
 
 export default function Agenda() {
@@ -10,7 +7,6 @@ export default function Agenda() {
         <View style={styles.container}>
             <Topo />
             <ScrollView>
-
                 <Text style={styles.titulo}>Agendar Visita</Text>
 
                 <View style={styles.formContainer}>
@@ -29,7 +25,6 @@ export default function Agenda() {
                         placeholder="Data:"
                     />
 
-                    
                     <TextInput
                         style={styles.input}
                         placeholder="Horario: 00:00"
@@ -46,8 +41,6 @@ export default function Agenda() {
                         placeholder="Observações"
                         multiline
                     />
-
-
                 </View>
             </ScrollView>
         </View>
@@ -58,7 +51,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#F5F5F5",
-
     },
     titulo: {
         width: '100%',
@@ -73,20 +65,20 @@ const styles = StyleSheet.create({
         marginTop: 10,
         marginBottom: 20,
     },
-      formContainer: {
-    paddingHorizontal: 20,
-  },
-  input: {
-    borderWidth: 4,
-    borderColor: '#84C4FB',
-    borderRadius: 5,
-    padding: 10,
-    paddingHorizontal: 15,
-    fontSize: 16,
-    color: '#2d6c80ff',
-    marginTop: 15,
-    fontWeight: 'bold',
-    marginBottom: 15,
-    backgroundColor: '#fff',
-  },
+    formContainer: {
+        paddingHorizontal: 20,
+    },
+    input: {
+        borderWidth: 2,
+        borderColor: '#84C4FB',
+        borderRadius: 5,
+        padding: 10,
+        paddingHorizontal: 15,
+        fontSize: 16,
+        color: '#375A76',
+        marginTop: 15,
+        fontWeight: 'bold',
+        marginBottom: 15,
+        backgroundColor: '#fff',
+    },
 });
