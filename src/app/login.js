@@ -7,7 +7,6 @@ import React from 'react';
 
 export default function Login() {
     const [name, setName] = React.useState('');
-    const [email, setEmail] = React.useState('');
     const [senha, setSenha] = React.useState('');
 
     return (
