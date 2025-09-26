@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ImageBackground, ScrollView } from "react-native"
+import { View, Text, StyleSheet, ScrollView } from "react-native"
 
 import Topo from "../components/Topo"
 import Imovel from "../components/imovel"
@@ -45,6 +45,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         gap: 15,
-        marginBottom: 20,
+        marginBottom: 60,
     },
 })
