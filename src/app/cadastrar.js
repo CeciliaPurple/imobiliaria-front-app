@@ -43,7 +43,7 @@ export default function Cadastrar() {
                     <TextInput
                         style={styles.input}
                         placeholder="Senha"
-                        placeholderTextColor={'rgba(55, 90, 118, 0.5)'}
+                        placeholderTextColor={'#375a76'}
                         value={senha}
                         onChangeText={setSenha}
                         secureTextEntry={true}
