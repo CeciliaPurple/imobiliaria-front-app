@@ -17,7 +17,7 @@ export default function Topo() {
       {/* Ícones */}
       <View style={styles.iconsContainer}>
         <TouchableOpacity style={styles.iconButton}>
-          <Link href={'/'}><Ionicons name="search-outline" size={28} color="#333" /></Link>
+          <Link href={'/filtro'}><Ionicons name="search-outline" size={28} color="#333" /></Link>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.iconButton}>

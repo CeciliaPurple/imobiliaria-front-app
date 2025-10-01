@@ -1,4 +1,3 @@
-import react from "react";
 import { View, Text, StyleSheet, ScrollView, TextInput } from "react-native";
 import Topo from "../components/Topo";
 
