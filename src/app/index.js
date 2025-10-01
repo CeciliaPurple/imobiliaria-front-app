@@ -13,14 +13,14 @@ export default function Home() {
             
             {/* Banner abaixo do Topo */}
             <ImageBackground
-                source={require("../../assets/img/banner.png")} // coloque sua imagem aqui
+                source={require("../../assets/img/banner.png")}
                 style={styles.banner}
             >
             </ImageBackground>
 
             {/*Destaques*/}
             <View style={styles.container_destaque}>
-                <Text style={styles.title}>Destaques</Text>
+                <Text style={styles.title}>Destaques</Text> 
                 <ScrollView
                     horizontal={true}
                     contentContainerStyle={styles.listaImoveis}
