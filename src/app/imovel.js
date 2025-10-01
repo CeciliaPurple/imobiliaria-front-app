@@ -56,19 +56,19 @@ export default function Imovel() {
 
                 <View style={styles.container_info}>
                     <View style={styles.infoItem}>
-                        <Ionicons name="home-outline" size={40} color="#375A76" />
+                        <Ionicons name="home-outline" size={32} color="#375A76" />
                         <Text style={styles.infoText}>000m²</Text>
                     </View>
                     <View style={styles.infoItem}>
-                        <Ionicons name="bed-outline" size={40} color="#375A76" />
+                        <Ionicons name="bed-outline" size={32} color="#375A76" />
                         <Text style={styles.infoText}>0 Quartos</Text>
                     </View>
                     <View style={styles.infoItem}>
-                        <Ionicons name="water-outline" size={40} color="#375A76" />
+                        <Ionicons name="water-outline" size={32} color="#375A76" />
                         <Text style={styles.infoText}>0 Banheiros</Text>
                     </View>
                     <View style={styles.infoItem}>
-                        <Ionicons name="car-outline" size={40} color="#375A76" />
+                        <Ionicons name="car-outline" size={32} color="#375A76" />
                         <Text style={styles.infoText}>0 Vagas</Text>
                     </View>
                 </View>
@@ -171,12 +171,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flexDirection: 'row',
         gap: 40,
-        padding: 10,
+        padding: 20,
     },
     button: {
-        width: 'fit-content',
         backgroundColor: '#146FBA',
-        paddingHorizontal: 20,
+        paddingHorizontal: 10,
         paddingVertical: 15,
         borderRadius: 10,
         alignItems: 'center',
@@ -190,7 +189,7 @@ const styles = StyleSheet.create({
     button2: {
         width: 'fit-content',
         backgroundColor: '#F5F5F5',
-        paddingHorizontal: 20,
+        paddingHorizontal: 10,
         paddingVertical: 15,
         borderRadius: 10,
         alignItems: 'center',
@@ -204,17 +203,15 @@ const styles = StyleSheet.create({
         borderColor: '#fff',
     },
     buttonText: {
-        fontSize: 16,
         fontWeight: 700,
         color: '#F5F5F5',
     },
     buttonText2: {
-        fontSize: 16,
         fontWeight: 700,
         color: '#375A76',
     },
     container_info: {
-        width: '70%',
+        width: '80%',
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'space-between',
@@ -230,7 +227,7 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     infoText: {
-        fontSize: 24,
+        fontSize: 20,
         color: '#375A76',
     },
     container_room: {
