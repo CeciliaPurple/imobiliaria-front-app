@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
+import { Link } from "expo-router";
 
 export default function Imovel() {
   return (
@@ -51,7 +52,8 @@ export default function Imovel() {
       <View style={styles.footer}>
         <Text style={styles.price}>R$00000,00</Text>
         <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Ver mais</Text>
+          <Link href={'/imovel'}><Text style={styles.buttonText}>Ver mais</Text></Link>
+          
         </TouchableOpacity>
       </View>
     </View>

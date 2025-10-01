@@ -43,9 +43,52 @@ export default function Imovel() {
                         <Text style={styles.light}>R$ 0.000.000</Text>
                     </View>
 
-                    <TouchableOpacity style={styles.button}>
-                        <Text style={styles.buttonText}>Ver mais</Text>
-                    </TouchableOpacity>
+                    <View style={styles.container_btn}>
+                        <TouchableOpacity style={styles.button}>
+                            <Text style={styles.buttonText}>Agendar Visita</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={styles.button2}>
+                            <Text style={styles.buttonText2}>Contato</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
+                <View style={styles.container_info}>
+                    <View style={styles.infoItem}>
+                        <Ionicons name="home-outline" size={40} color="#375A76" />
+                        <Text style={styles.infoText}>000m²</Text>
+                    </View>
+                    <View style={styles.infoItem}>
+                        <Ionicons name="bed-outline" size={40} color="#375A76" />
+                        <Text style={styles.infoText}>0 Quartos</Text>
+                    </View>
+                    <View style={styles.infoItem}>
+                        <Ionicons name="water-outline" size={40} color="#375A76" />
+                        <Text style={styles.infoText}>0 Banheiros</Text>
+                    </View>
+                    <View style={styles.infoItem}>
+                        <Ionicons name="car-outline" size={40} color="#375A76" />
+                        <Text style={styles.infoText}>0 Vagas</Text>
+                    </View>
+                </View>
+
+                <View style={styles.container_room}>
+                    <Text style={styles.bold}>Ambientes</Text>
+                    <View style={styles.container_card}>
+                        <Text style={styles.text_card}>Área de Serviços</Text>
+                        <Text style={styles.text_card}>Closet</Text>
+                        <Text style={styles.text_card}>Escritório</Text>
+                        <Text style={styles.text_card}>Piscina</Text>
+                    </View>
+
+                    <Text style={styles.bold}>Conveniências</Text>
+                    <View style={styles.container_card}>
+                        <Text style={styles.text_card}>Área de Serviços</Text>
+                        <Text style={styles.text_card}>Closet</Text>
+                        <Text style={styles.text_card}>Escritório</Text>
+                        <Text style={styles.text_card}>Piscina</Text>
+                    </View>
                 </View>
             </ScrollView>
         </View>
@@ -93,7 +136,7 @@ const styles = StyleSheet.create({
     },
     container_price: {
         backgroundColor: '#E3F2FF',
-        width: '80%',
+        width: '70%',
         gap: 20,
         padding: 20,
         borderRadius: 10,
@@ -104,6 +147,8 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
         shadowRadius: 4,
+        alignSelf: 'center',
+        marginTop: 40,
     },
     price: {
         display: 'flex',
@@ -119,11 +164,104 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: "#375A76",
     },
-    button: {
-        backgroundColor: '#146FBA',
+    container_btn: {
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'row',
+        gap: 40,
         padding: 10,
+    },
+    button: {
+        width: 'fit-content',
+        backgroundColor: '#146FBA',
+        paddingHorizontal: 20,
+        paddingVertical: 15,
         borderRadius: 10,
         alignItems: 'center',
         justifyContent: 'center',
-    }
+        elevation: 4,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+    },
+    button2: {
+        width: 'fit-content',
+        backgroundColor: '#F5F5F5',
+        paddingHorizontal: 20,
+        paddingVertical: 15,
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        elevation: 4,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        borderWidth: 2,
+        borderColor: '#fff',
+    },
+    buttonText: {
+        fontSize: 16,
+        fontWeight: 700,
+        color: '#F5F5F5',
+    },
+    buttonText2: {
+        fontSize: 16,
+        fontWeight: 700,
+        color: '#375A76',
+    },
+    container_info: {
+        width: '70%',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 40,
+        alignSelf: 'center',
+        gap: 40,
+    },
+    infoItem: {
+        display: 'flex',
+        flexDirection: "row",
+        alignItems: "end",
+        gap: 10,
+    },
+    infoText: {
+        fontSize: 24,
+        color: '#375A76',
+    },
+    container_room: {
+        gap: 20,
+        padding: 40,
+    },
+    container_card: {
+        width: '50%',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        backgroundColor: '#E3F2FF',
+        borderRadius: 10,
+        borderWidth: 2,
+        borderColor: '#fff',
+        padding: 10,
+        gap: 10,
+        elevation: 4,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+    },
+    text_card: {
+        width: 'fit-content',
+        padding: 10,
+        color: '#146FBA',
+        fontSize: 16,
+        fontWeight: 500,
+        backgroundColor: '#E3F2FF',
+        borderRadius: 10,
+        borderWidth: 2,
+        borderColor: '#fff',
+    },
 })
