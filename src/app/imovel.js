@@ -3,6 +3,7 @@ import Topo from "../components/Topo";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import EvilIcons from '@expo/vector-icons/EvilIcons';
+import { Link } from "expo-router";
 
 export default function Imovel() {
     return (
@@ -44,13 +45,17 @@ export default function Imovel() {
                     </View>
 
                     <View style={styles.container_btn}>
-                        <TouchableOpacity style={styles.button}>
-                            <Text style={styles.buttonText}>Agendar Visita</Text>
-                        </TouchableOpacity>
+                        <Link href={'/agenda'}>
+                            <TouchableOpacity style={styles.button}>
+                                <Text style={styles.buttonText}>Agendar Visita</Text>
+                            </TouchableOpacity>
+                        </Link>
+                        <Link href={'/'}>
+                            <TouchableOpacity style={styles.button2}>
+                                <Text style={styles.buttonText2}>Contato</Text>
+                            </TouchableOpacity>
+                        </Link>
 
-                        <TouchableOpacity style={styles.button2}>
-                            <Text style={styles.buttonText2}>Contato</Text>
-                        </TouchableOpacity>
                     </View>
                 </View>
 
