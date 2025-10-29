@@ -1,21 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, StyleSheet, TextInput, ScrollView, Pressable } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import BotaoSelecao from './BotaoSelecao'; // Componente de seleção
+import BotaoSelecao from './BotaoSelecao';
 
-// --- DADOS PARA OS FILTROS DE BOTÕES ---
+//DADOS PARA OS FILTROS DE BOTÕES
 const TIPOS_IMOVEIS = ['Casas', 'Apartamento', 'Coberturas', 'Loft', 'Sítios e Chácaras', 'Flat'];
 const AMBIENTES = ['Área de Serviços', 'Closet', 'Escritório', 'Jardim', 'Lavanderia', 'Piscina', 'Quintal'];
 const CONVENIENCIAS = ['Ar-condicionado', 'Armários Planejados', 'Hidromassagem', 'Mobiliado'];
-// ----------------------------------------
 
-// Recebe: visible, onClose, onApply, filtrosIniciais
+
 export default function ModalFiltros({ visible, onClose, onApply, filtrosIniciais }) {
     
-    // Estado Local para os inputs do formulário
     const [filtros, setFiltros] = useState(filtrosIniciais);
 
-    // Sincroniza o estado local quando o modal é aberto
     useEffect(() => {
         if (visible) {
             setFiltros(filtrosIniciais);
@@ -29,13 +26,11 @@ export default function ModalFiltros({ visible, onClose, onApply, filtrosIniciai
         }));
     };
 
-    // Lógica para seleção ÚNICA (ex: Tipo de Imóvel)
     const handleSingleSelect = (campo, valor) => {
         const novoValor = filtros[campo] === valor ? '' : valor;
         handleInputChange(campo, novoValor);
     };
 
-    // Lógica para seleção MÚLTIPLA (ex: Ambientes, Conveniências)
     const handleMultipleSelect = (campo, valor) => {
         const listaAtual = filtros[campo];
         const novaLista = listaAtual.includes(valor)
@@ -45,7 +40,6 @@ export default function ModalFiltros({ visible, onClose, onApply, filtrosIniciai
         handleInputChange(campo, novaLista);
     };
 
-    // Lógica para Contadores (+1)
     const handleCounterChange = (campo, operacao) => {
         const valorAtual = filtros[campo];
         let novoValor = valorAtual;
@@ -64,8 +58,6 @@ export default function ModalFiltros({ visible, onClose, onApply, filtrosIniciai
     const handleApplyPress = () => onApply(filtros);
     const handleClearAndClose = () => onApply({ localizacao: '', tipoImovel: '', precoMin: '', precoMax: '', quartos: 0, banheiros: 0, garagens: 0, ambientes: [], conveniencias: [] });
 
-
-    // --- Componente interno para os botões de contador (para simplificar o JSX) ---
     const CounterInput = ({ label, campo }) => (
         <View>
             <Text style={modalStyles.sectionTitle}>{label}</Text>
@@ -90,7 +82,7 @@ export default function ModalFiltros({ visible, onClose, onApply, filtrosIniciai
 
     return (
         <Modal
-            animationType="slide" // A animação de slide continuará funcionando bem
+            animationType="slide"
             transparent={true}    
             visible={visible}     
             onRequestClose={onClose} 
@@ -98,7 +90,7 @@ export default function ModalFiltros({ visible, onClose, onApply, filtrosIniciai
             <View style={modalStyles.centeredView}>
                 <View style={modalStyles.modalView}>
                     
-                    {/* CABEÇALHO */}
+                    {/*CABEÇALHO*/}
                     <View style={modalStyles.header}>
                         <Ionicons name="filter" size={18} color="#146fba" />
                         <Text style={modalStyles.modalTitle}>Filtros</Text>
@@ -109,7 +101,7 @@ export default function ModalFiltros({ visible, onClose, onApply, filtrosIniciai
 
                     <ScrollView style={modalStyles.scrollViewContent}>
                         
-                        {/* 1. LOCALIZAÇÃO */}
+                        {/*LOCALIZAÇÃO*/}
                         <Text style={modalStyles.sectionTitle}>Localização</Text>
                         <TextInput 
                             style={modalStyles.input} 
@@ -118,7 +110,7 @@ export default function ModalFiltros({ visible, onClose, onApply, filtrosIniciai
                             onChangeText={(text) => handleInputChange('localizacao', text)}
                         />
 
-                        {/* 2. TIPOS DE IMÓVEIS (Seleção Única) */}
+                        {/*TIPOS DE IMÓVEIS*/}
                         <Text style={modalStyles.sectionTitle}>Tipos de Imóveis</Text>
                         <View style={modalStyles.buttonGroup}>
                             {TIPOS_IMOVEIS.map(tipo => (
@@ -131,7 +123,7 @@ export default function ModalFiltros({ visible, onClose, onApply, filtrosIniciai
                             ))}
                         </View>
 
-                        {/* 3. PREÇO */}
+                        {/*PREÇO*/}
                         <Text style={modalStyles.sectionTitle}>Preço</Text>
                         <View style={modalStyles.priceGroup}>
                             <View style={modalStyles.priceInputContainer}>
@@ -156,12 +148,12 @@ export default function ModalFiltros({ visible, onClose, onApply, filtrosIniciai
                             </View>
                         </View>
 
-                        {/* 4. CONTADORES (Quartos, Banheiros, Garagens) */}
+                        {/*CONTADORES*/}
                         <CounterInput label="Quartos" campo="quartos" />
                         <CounterInput label="Banheiros" campo="banheiros" />
                         <CounterInput label="Garagens" campo="garagens" />
 
-                        {/* 5. AMBIENTES (Seleção Múltipla) */}
+                        {/*AMBIENTES*/}
                         <Text style={modalStyles.sectionTitle}>Ambientes</Text>
                         <View style={modalStyles.buttonGroup}>
                             {AMBIENTES.map(ambiente => (
@@ -174,7 +166,7 @@ export default function ModalFiltros({ visible, onClose, onApply, filtrosIniciai
                             ))}
                         </View>
 
-                        {/* 6. CONVENIÊNCIAS (Seleção Múltipla) */}
+                        {/*CONVENIÊNCIAS*/}
                         <Text style={modalStyles.sectionTitle}>Conveniências</Text>
                         <View style={modalStyles.buttonGroup}>
                             {CONVENIENCIAS.map(conv => (
@@ -213,30 +205,26 @@ export default function ModalFiltros({ visible, onClose, onApply, filtrosIniciai
 }
 
 const modalStyles = StyleSheet.create({
-    // Estilos do Modal Overlay e Posição
     centeredView: {
         flex: 1,
-        // *** ALTERAÇÃO AQUI: Alinhado à esquerda ***
-        justifyContent: 'flex-start', // Continua no topo
-        alignItems: 'flex-start',     // Alinha o conteúdo à esquerda
+        justifyContent: 'flex-start', 
+        alignItems: 'flex-start',     
         backgroundColor: 'rgba(0, 0, 0, 0.4)', 
     },
     modalView: {
         backgroundColor: 'white',
         padding: 15,
-        width: '85%', // Largura do modal (você pode ajustar)
-        height: '100%', // Ocupa a altura total
+        width: '85%', 
+        height: '100%', 
         margin: 0,
         borderRadius: 0, 
         shadowColor: '#000',
-        // *** ALTERAÇÃO AQUI: Sombra para a direita ***
         shadowOffset: { width: 2, height: 0 }, 
         shadowOpacity: 0.25,
         shadowRadius: 4,
         elevation: 5,
     },
     
-    // Estilos do Cabeçalho
     header: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -257,7 +245,6 @@ const modalStyles = StyleSheet.create({
         padding: 5,
     },
 
-    // Estilos do Conteúdo e Inputs
     scrollViewContent: {
         flexGrow: 1, 
         paddingRight: 5, 
@@ -279,14 +266,12 @@ const modalStyles = StyleSheet.create({
         marginBottom: 15,
     },
 
-    // Estilos para Grupos de Botões (Seleção e Múltipla)
     buttonGroup: {
         flexDirection: 'row',
         flexWrap: 'wrap',
         marginBottom: 10,
     },
-    
-    // Estilos para a seção de Preço
+
     priceGroup: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -310,7 +295,6 @@ const modalStyles = StyleSheet.create({
         backgroundColor: '#fff',
     },
 
-    // Estilos para Contadores (+1)
     counterGroup: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -340,7 +324,6 @@ const modalStyles = StyleSheet.create({
         borderBottomColor: '#ccc',
     },
 
-    // Estilos dos Botões de Ação (Limpar/Aplicar)
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',

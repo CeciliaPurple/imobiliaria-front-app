@@ -5,7 +5,7 @@ import Imovel from "../components/imovel";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import ModalFiltros from '../components/ModalFiltros'; 
 
-// --- DADOS DE EXEMPLO (Com todos os campos para teste) ---
+// DADOS DE EXEMPLO
 const LISTA_IMOVEIS = [
     { id: 1, tipoImovel: 'Apartamento', preco: 250000, quartos: 2, banheiros: 1, garagens: 1, ambientes: ['Área de Serviços'], conveniencias: ['Mobiliado'] },
     { id: 2, tipoImovel: 'Casa', preco: 450000, quartos: 3, banheiros: 2, garagens: 2, ambientes: ['Piscina', 'Jardim'], conveniencias: ['Ar-condicionado'] },
@@ -18,7 +18,7 @@ const LISTA_IMOVEIS = [
 export default function Filtro() {
     const [modalVisible, setModalVisible] = useState(false);
 
-    // 1. ESTADO COMPLETO DOS FILTROS
+    // ESTADO COMPLETO DOS FILTROS
     const [filtrosAtivos, setFiltrosAtivos] = useState({
         localizacao: '',
         tipoImovel: '',  
@@ -39,25 +39,21 @@ export default function Filtro() {
         const listaFiltrada = LISTA_IMOVEIS.filter(imovel => {
             let passaNoFiltro = true;
 
-            // --- 1. FILTRO POR TIPO DE IMÓVEL (Seleção Única) ---
             if (novosFiltros.tipoImovel && imovel.tipoImovel !== novosFiltros.tipoImovel) {
                 passaNoFiltro = false;
             }
 
-            // --- 2. FILTRO POR PREÇO MÍNIMO/MÁXIMO ---
             const min = Number(novosFiltros.precoMin);
             const max = Number(novosFiltros.precoMax);
 
             if (min > 0 && imovel.preco < min) {
                 passaNoFiltro = false;
             }
-            // Verifica max se for maior que 0 (para não filtrar se estiver vazio)
+
             if (max > 0 && imovel.preco > max) {
                 passaNoFiltro = false;
             }
 
-            // --- 3. FILTRO POR CONTADORES (Valores Mínimos) ---
-            // O imóvel DEVE ter a quantidade ou mais
             if (novosFiltros.quartos > 0 && imovel.quartos < novosFiltros.quartos) {
                 passaNoFiltro = false;
             }
@@ -68,8 +64,6 @@ export default function Filtro() {
                 passaNoFiltro = false;
             }
 
-            // --- 4. FILTRO POR SELEÇÃO MÚLTIPLA (Ambientes) - Lógica "OU" ---
-            // O imóvel deve ter PELO MENOS UM dos ambientes selecionados
             if (novosFiltros.ambientes.length > 0) {
                 const hasMatch = novosFiltros.ambientes.some(filterAmbiente => 
                     imovel.ambientes.includes(filterAmbiente)
@@ -77,8 +71,6 @@ export default function Filtro() {
                 if (!hasMatch) passaNoFiltro = false;
             }
 
-            // --- 5. FILTRO POR SELEÇÃO MÚLTIPLA (Conveniências) - Lógica "OU" ---
-            // O imóvel deve ter PELO MENOS UMA das conveniências selecionadas
             if (novosFiltros.conveniencias.length > 0) {
                  const hasMatch = novosFiltros.conveniencias.some(filterConv => 
                     imovel.conveniencias.includes(filterConv)
@@ -86,20 +78,13 @@ export default function Filtro() {
                 if (!hasMatch) passaNoFiltro = false;
             }
 
-            // A localização não é filtrada pois o dado de exemplo não a possui.
-            // Para fazê-lo, a lista de imóveis precisaria do campo 'localizacao'.
-            // if (novosFiltros.localizacao && !imovel.localizacao.toLowerCase().includes(novosFiltros.localizacao.toLowerCase())) { passaNoFiltro = false; }
-
-
             return passaNoFiltro;
         });
 
-        // Atualiza a lista exibida e fecha o modal
         setImoveisFiltrados(listaFiltrada);
         setModalVisible(false);
     };
     
-    // ... (restante do componente permanece igual)
     return (
         <View style={styles.container}>
             <Topo />
