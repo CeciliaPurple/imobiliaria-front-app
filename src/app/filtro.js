@@ -7,11 +7,36 @@ import ModalFiltros from '../components/ModalFiltros';
 
 // DADOS DE EXEMPLO
 const LISTA_IMOVEIS = [
-    { id: 1, tipoImovel: 'Apartamento', preco: 250000, quartos: 2, banheiros: 1, garagens: 1, ambientes: ['Área de Serviços'], conveniencias: ['Mobiliado'] },
-    { id: 2, tipoImovel: 'Casa', preco: 450000, quartos: 3, banheiros: 2, garagens: 2, ambientes: ['Piscina', 'Jardim'], conveniencias: ['Ar-condicionado'] },
-    { id: 3, tipoImovel: 'Apartamento', preco: 180000, quartos: 1, banheiros: 1, garagens: 0, ambientes: ['Lavanderia'], conveniencias: [] },
-    { id: 4, tipoImovel: 'Casa', preco: 800000, quartos: 4, banheiros: 3, garagens: 2, ambientes: ['Closet', 'Escritório'], conveniencias: ['Armários Planejados', 'Hidromassagem'] },
-    { id: 5, tipoImovel: 'Loft', preco: 300000, quartos: 0, banheiros: 1, garagens: 1, ambientes: [], conveniencias: ['Mobiliado'] },
+    { 
+        id: 1,
+        titulo: "Casa mobiliada no centro de indaia com M² 250 m R$ 5.000,00",
+        endereco: "Rua Quarto N° 63, indaia - Centro",
+        valorVenda: "250.000,00",
+        valorIPTU: "2.500,00",
+        area: "75",
+        quartos: "2",
+        banheiros: "1",
+        vagas: "1",
+        imagem: require("../../assets/img/casa1.jpg"),
+        favorito: false,
+        ambientes: ["Área de Serviços", "Closet", "Escritório", "Piscina"],
+        conveniencias: ["Área de Serviços", "Closet", "Escritório", "Piscina"]
+    },
+    { 
+        id: 2,
+        titulo: "Casa com Piscina próximo ao centro",
+        endereco: "Rua Cinco N° 123, indaia - Centro",
+        valorVenda: "450.000,00",
+        valorIPTU: "4.500,00",
+        area: "200",
+        quartos: "3",
+        banheiros: "2",
+        vagas: "2",
+        imagem: require("../../assets/img/casa1.jpg"),
+        favorito: false,
+        ambientes: ["Área de Serviços", "Closet", "Escritório", "Piscina"],
+        conveniencias: ["Área de Serviços", "Closet", "Escritório", "Piscina"]
+    }
 ];
 // ---------------------------------------------------------
 
@@ -20,15 +45,19 @@ export default function Filtro() {
 
     // ESTADO COMPLETO DOS FILTROS
     const [filtrosAtivos, setFiltrosAtivos] = useState({
-        localizacao: '',
-        tipoImovel: '',  
-        precoMin: '',
-        precoMax: '',
-        quartos: 0,      
-        banheiros: 0,    
-        garagens: 0,     
-        ambientes: [],   
-        conveniencias: [], 
+        titulo: '',
+        endereco: '',
+        valorVendaMin: '',
+        valorVendaMax: '',
+        valorIPTUMin: '',
+        valorIPTUMax: '',
+        areaMin: '',
+        areaMax: '',
+        quartos: '0',
+        banheiros: '0',
+        vagas: '0',
+        ambientes: [],
+        conveniencias: []
     });
 
     const [imoveisFiltrados, setImoveisFiltrados] = useState(LISTA_IMOVEIS);
@@ -39,41 +68,74 @@ export default function Filtro() {
         const listaFiltrada = LISTA_IMOVEIS.filter(imovel => {
             let passaNoFiltro = true;
 
-            if (novosFiltros.tipoImovel && imovel.tipoImovel !== novosFiltros.tipoImovel) {
+            // Filtro por título
+            if (novosFiltros.titulo && !imovel.titulo.toLowerCase().includes(novosFiltros.titulo.toLowerCase())) {
                 passaNoFiltro = false;
             }
 
-            const min = Number(novosFiltros.precoMin);
-            const max = Number(novosFiltros.precoMax);
-
-            if (min > 0 && imovel.preco < min) {
+            // Filtro por endereço
+            if (novosFiltros.endereco && !imovel.endereco.toLowerCase().includes(novosFiltros.endereco.toLowerCase())) {
                 passaNoFiltro = false;
             }
 
-            if (max > 0 && imovel.preco > max) {
+            // Filtro por valor de venda
+            const valorVendaAtual = Number(imovel.valorVenda.replace(".", "").replace(",", "."));
+            const valorVendaMin = Number(novosFiltros.valorVendaMin);
+            const valorVendaMax = Number(novosFiltros.valorVendaMax);
+
+            if (valorVendaMin > 0 && valorVendaAtual < valorVendaMin) {
+                passaNoFiltro = false;
+            }
+            if (valorVendaMax > 0 && valorVendaAtual > valorVendaMax) {
                 passaNoFiltro = false;
             }
 
-            if (novosFiltros.quartos > 0 && imovel.quartos < novosFiltros.quartos) {
+            // Filtro por valor de IPTU
+            const valorIPTUAtual = Number(imovel.valorIPTU.replace(".", "").replace(",", "."));
+            const valorIPTUMin = Number(novosFiltros.valorIPTUMin);
+            const valorIPTUMax = Number(novosFiltros.valorIPTUMax);
+
+            if (valorIPTUMin > 0 && valorIPTUAtual < valorIPTUMin) {
                 passaNoFiltro = false;
             }
-            if (novosFiltros.banheiros > 0 && imovel.banheiros < novosFiltros.banheiros) {
-                passaNoFiltro = false;
-            }
-            if (novosFiltros.garagens > 0 && imovel.garagens < novosFiltros.garagens) {
+            if (valorIPTUMax > 0 && valorIPTUAtual > valorIPTUMax) {
                 passaNoFiltro = false;
             }
 
+            // Filtro por área
+            const areaAtual = Number(imovel.area);
+            const areaMin = Number(novosFiltros.areaMin);
+            const areaMax = Number(novosFiltros.areaMax);
+
+            if (areaMin > 0 && areaAtual < areaMin) {
+                passaNoFiltro = false;
+            }
+            if (areaMax > 0 && areaAtual > areaMax) {
+                passaNoFiltro = false;
+            }
+
+            // Filtros por quantidade
+            if (Number(novosFiltros.quartos) > 0 && Number(imovel.quartos) < Number(novosFiltros.quartos)) {
+                passaNoFiltro = false;
+            }
+            if (Number(novosFiltros.banheiros) > 0 && Number(imovel.banheiros) < Number(novosFiltros.banheiros)) {
+                passaNoFiltro = false;
+            }
+            if (Number(novosFiltros.vagas) > 0 && Number(imovel.vagas) < Number(novosFiltros.vagas)) {
+                passaNoFiltro = false;
+            }
+
+            // Filtros por ambientes e conveniências
             if (novosFiltros.ambientes.length > 0) {
-                const hasMatch = novosFiltros.ambientes.some(filterAmbiente => 
-                    imovel.ambientes.includes(filterAmbiente)
+                const hasMatch = novosFiltros.ambientes.some(ambiente => 
+                    imovel.ambientes.includes(ambiente)
                 );
                 if (!hasMatch) passaNoFiltro = false;
             }
 
             if (novosFiltros.conveniencias.length > 0) {
-                 const hasMatch = novosFiltros.conveniencias.some(filterConv => 
-                    imovel.conveniencias.includes(filterConv)
+                const hasMatch = novosFiltros.conveniencias.some(conveniencia => 
+                    imovel.conveniencias.includes(conveniencia)
                 );
                 if (!hasMatch) passaNoFiltro = false;
             }

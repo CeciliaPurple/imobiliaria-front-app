@@ -4,7 +4,7 @@ import { Link } from "expo-router"
 
 
 
-export default function Enter() {
+export default function Inicio() {
     return (
         <ImageBackground style={styles.container} source={require('../../assets/img/gradient2.png')} resizeMode="stretch">
             <View style={styles.container_logo}>

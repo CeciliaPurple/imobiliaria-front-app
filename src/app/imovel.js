@@ -4,14 +4,27 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import EvilIcons from '@expo/vector-icons/EvilIcons';
 import { Link } from "expo-router";
+import { useState } from "react";
 
 export default function Imovel() {
+    const [titulo, setTitulo] = useState("Casa mobiliada no centro de indaia com M² 250 m R$ 5.000,00");
+    const [endereco, setEndereco] = useState("Rua Quarto N° 63, indaia - Centro");
+    const [valorVenda, setValorVenda] = useState("0.000.000");
+    const [valorIPTU, setValorIPTU] = useState("0.000.000");
+    const [area, setArea] = useState("000");
+    const [quartos, setQuartos] = useState("0");
+    const [banheiros, setBanheiros] = useState("0");
+    const [vagas, setVagas] = useState("0");
+    const [imagem, setImagem] = useState(require("../../assets/img/casa1.jpg"));
+    const [favorito, setFavorito] = useState(false);
+    const [ambientes, setAmbientes] = useState(["Área de Serviços", "Closet", "Escritório", "Piscina"]);
+    const [conveniencias, setConveniencias] = useState(["Área de Serviços", "Closet", "Escritório", "Piscina"]);
     return (
         <View style={styles.container}>
             <Topo />
             <ScrollView>
                 <ImageBackground
-                    source={require("../../assets/img/casa1.jpg")}
+                    source={imagem}
                     style={styles.img}
                 >
                     {/* Gradiente escuro embaixo */}
@@ -22,26 +35,32 @@ export default function Imovel() {
                     />
                     {/* Nome + coração */}
                     <View style={styles.overlay}>
-                        <Ionicons name="heart-outline" size={32} color="#fff" />
+                        <TouchableOpacity onPress={() => setFavorito(!favorito)}>
+                            <Ionicons 
+                                name={favorito ? "heart" : "heart-outline"} 
+                                size={32} 
+                                color="#fff" 
+                            />
+                        </TouchableOpacity>
                     </View>
 
                 </ImageBackground>
 
-                <Text style={styles.titulo}>Casa mobiliada no centro de indaia com M² 250 m R$ 5.000,00 </Text>
+                <Text style={styles.titulo}>{titulo}</Text>
 
                 <View style={styles.location}>
                     <EvilIcons name="location" size={32} color="#375A76" />
-                    <Text style={styles.text_location}>Rua Quarto N° 63, indaia - Centro</Text>
+                    <Text style={styles.text_location}>{endereco}</Text>
                 </View>
 
                 <View style={styles.container_price}>
                     <View style={styles.price}>
-                        <Text style={styles.bold}>Valor</Text>
-                        <Text style={styles.bold}>R$ 0.000.000</Text>
+                        <Text style={styles.bold}>Valor Venda</Text>
+                        <Text style={styles.bold}>R$ {valorVenda}</Text>
                     </View>
                     <View style={styles.price}>
-                        <Text style={styles.light}>Valor</Text>
-                        <Text style={styles.light}>R$ 0.000.000</Text>
+                        <Text style={styles.light}>Valor IPTU</Text>
+                        <Text style={styles.light}>R$ {valorIPTU}</Text>
                     </View>
 
                     <View style={styles.container_btn}>
@@ -62,37 +81,35 @@ export default function Imovel() {
                 <View style={styles.container_info}>
                     <View style={styles.infoItem}>
                         <Ionicons name="home-outline" size={32} color="#375A76" />
-                        <Text style={styles.infoText}>000m²</Text>
+                        <Text style={styles.infoText}>{area}m²</Text>
                     </View>
                     <View style={styles.infoItem}>
                         <Ionicons name="bed-outline" size={32} color="#375A76" />
-                        <Text style={styles.infoText}>0 Quartos</Text>
+                        <Text style={styles.infoText}>{quartos} Quartos</Text>
                     </View>
                     <View style={styles.infoItem}>
                         <Ionicons name="water-outline" size={32} color="#375A76" />
-                        <Text style={styles.infoText}>0 Banheiros</Text>
+                        <Text style={styles.infoText}>{banheiros} Banheiros</Text>
                     </View>
                     <View style={styles.infoItem}>
                         <Ionicons name="car-outline" size={32} color="#375A76" />
-                        <Text style={styles.infoText}>0 Vagas</Text>
+                        <Text style={styles.infoText}>{vagas} Vagas</Text>
                     </View>
                 </View>
 
                 <View style={styles.container_room}>
                     <Text style={styles.bold}>Ambientes</Text>
                     <View style={styles.container_card}>
-                        <Text style={styles.text_card}>Área de Serviços</Text>
-                        <Text style={styles.text_card}>Closet</Text>
-                        <Text style={styles.text_card}>Escritório</Text>
-                        <Text style={styles.text_card}>Piscina</Text>
+                        {ambientes.map((ambiente, index) => (
+                            <Text key={index} style={styles.text_card}>{ambiente}</Text>
+                        ))}
                     </View>
 
                     <Text style={styles.bold}>Conveniências</Text>
                     <View style={styles.container_card}>
-                        <Text style={styles.text_card}>Área de Serviços</Text>
-                        <Text style={styles.text_card}>Closet</Text>
-                        <Text style={styles.text_card}>Escritório</Text>
-                        <Text style={styles.text_card}>Piscina</Text>
+                        {conveniencias.map((conveniencia, index) => (
+                            <Text key={index} style={styles.text_card}>{conveniencia}</Text>
+                        ))}
                     </View>
                 </View>
             </ScrollView>
@@ -141,7 +158,7 @@ const styles = StyleSheet.create({
     },
     container_price: {
         backgroundColor: '#E3F2FF',
-        width: '70%',
+        width: '80%',
         gap: 20,
         padding: 20,
         borderRadius: 10,
@@ -175,10 +192,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'row',
-        gap: 40,
-        padding: 20,
+        gap: "25%",
     },
     button: {
+        width: 'fit-content',
         backgroundColor: '#146FBA',
         paddingHorizontal: 10,
         paddingVertical: 15,
@@ -208,10 +225,12 @@ const styles = StyleSheet.create({
         borderColor: '#fff',
     },
     buttonText: {
+        fontSize: 12,
         fontWeight: 700,
         color: '#F5F5F5',
     },
     buttonText2: {
+        fontSize: 12,
         fontWeight: 700,
         color: '#375A76',
     },

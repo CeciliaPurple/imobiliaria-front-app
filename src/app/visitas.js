@@ -3,6 +3,7 @@ import Topo from "../components/Topo"
 import VisitaImovel from '../components/VisitaImovel'
 
 export default function Visitas() {
+
     return (
         <View style={styles.container}>
             <Topo />

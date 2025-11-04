@@ -10,48 +10,59 @@ export default function Home() {
         <View style={styles.container}>
             <Topo />
             <ScrollView style={styles.container}>
-            
-            {/* Banner abaixo do Topo */}
-            <ImageBackground
-                source={require("../../assets/img/banner.png")}
-                style={styles.banner}
-            >
-            </ImageBackground>
 
-            {/*Destaques*/}
-            <View style={styles.container_destaque}>
-                <Text style={styles.title}>Destaques</Text> 
-                <ScrollView
-                    horizontal={true}
-                    contentContainerStyle={styles.listaImoveis}
-                    showsHorizontalScrollIndicator={false}
+                {/* Banner abaixo do Topo */}
+                <ImageBackground
+                    source={require("../../assets/img/banner.png")}
+                    style={styles.banner}
                 >
-                    <Imovel />
-                    <Imovel />
-                    <Imovel />
-                    <Imovel />
-                    <Imovel />
-                </ScrollView>
-            </View>
+                </ImageBackground>
 
-            {/*Lançamentos*/}
-            <View style={styles.container_destaque}>
-                <Text style={styles.title}>Lançamentos</Text>
-                <ScrollView
-                    horizontal={true}
-                    contentContainerStyle={styles.listaImoveis}
-                    showsHorizontalScrollIndicator={false}
-                >
-                    <Imovel />
-                    <Imovel />
-                    <Imovel />
-                    <Imovel />
-                    <Imovel />
-                </ScrollView>
-            </View>
-        </ScrollView>
+                {/*Destaques*/}
+                <View style={styles.container_destaque}>
+                    <Text style={styles.title}>Destaques</Text>
+                    <ScrollView
+                        horizontal={true}
+                        contentContainerStyle={styles.listaImoveis}
+                        showsHorizontalScrollIndicator={false}
+                    >
+                        <Imovel data={{
+                            nome: "Casa Moderna",
+                            area: "150",
+                            quartos: "3",
+                            banheiros: "2",
+                            vagas: "2",
+                            preco: "450.000,00",
+                            imagem: require("../../assets/img/casa1.jpg"),
+                            favorito: false
+                        }} />
+
+                        <Imovel />
+                        <Imovel />
+                        <Imovel />
+                        <Imovel />
+                        <Imovel />
+                    </ScrollView>
+                </View>
+
+                {/*Lançamentos*/}
+                <View style={styles.container_destaque}>
+                    <Text style={styles.title}>Lançamentos</Text>
+                    <ScrollView
+                        horizontal={true}
+                        contentContainerStyle={styles.listaImoveis}
+                        showsHorizontalScrollIndicator={false}
+                    >
+                        <Imovel />
+                        <Imovel />
+                        <Imovel />
+                        <Imovel />
+                        <Imovel />
+                    </ScrollView>
+                </View>
+            </ScrollView>
         </View>
-        
+
     )
 }
 
@@ -78,7 +89,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         gap: 10,
         paddingHorizontal: 10,
-        paddingVertical: 10, 
+        paddingVertical: 10,
     },
     title: {
         fontSize: 20,
