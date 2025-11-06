@@ -177,7 +177,19 @@ export default function Filtro() {
 
                 <View style={styles.container_imovel}>
                     {imoveisFiltrados.map((imovel) => (
-                        <Imovel key={imovel.id} dados={imovel} />
+                        <Imovel 
+                            key={imovel.id} 
+                            data={{
+                                nome: imovel.titulo,
+                                area: imovel.area,
+                                quartos: imovel.quartos,
+                                banheiros: imovel.banheiros,
+                                vagas: imovel.vagas,
+                                preco: imovel.valorVenda,
+                                imagem: imovel.imagem,
+                                favorito: imovel.favorito
+                            }} 
+                        />
                     ))}
 
                     {imoveisFiltrados.length === 0 && (

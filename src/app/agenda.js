@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, TextInput } from "react-native";
+import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity } from "react-native";
 import Topo from "../components/Topo";
 
 export default function Agenda() {
@@ -17,6 +17,7 @@ export default function Agenda() {
                     <TextInput
                         style={styles.input}
                         placeholder="Email"
+                        keyboardType="email-address"
                     />
 
                     <TextInput
@@ -33,6 +34,7 @@ export default function Agenda() {
                         style={styles.input}
                         placeholder="Telefone"
                         defaultValue="(00) 00000-0000"
+                        keyboardType="phone-pad"
                     />
 
                     <TextInput
@@ -40,6 +42,12 @@ export default function Agenda() {
                         placeholder="Observações"
                         multiline
                     />
+                </View>
+
+                <View>
+                    <TouchableOpacity style={styles.button}>
+                        <Text style={styles.buttonText}>Agendar Visita</Text>
+                    </TouchableOpacity>
                 </View>
             </ScrollView>
         </View>
@@ -80,4 +88,19 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         backgroundColor: '#fff',
     },
+    button: {
+        backgroundColor: '#146FBA',
+        width: 'fit-content',
+        padding: 15,
+        borderRadius: 10,
+        color: '#fff',
+        fontWeight: '700',
+        alignSelf: 'center',
+        marginTop: 10,
+    },
+    buttonText: {
+        color: '#fff',
+        fontWeight: '600',
+        fontSize: 16,
+    }
 });

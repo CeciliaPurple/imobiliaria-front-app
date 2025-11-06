@@ -12,7 +12,7 @@ export default function VisitasImovel({ data }) {
     const [telefone, setTelefone] = useState(data?.telefone || "(12) 99600-0000");
     const [status, setStatus] = useState(data?.status || "Pendente");
     return (
-        <Link href={'/agenda'} asChild>
+        <Link href={`/editarVisita?id=${data?.id || '1'}`} asChild>
             <View style={styles.container_imovel}>
 
                 <View style={styles.img}>
