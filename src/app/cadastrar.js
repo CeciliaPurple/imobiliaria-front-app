@@ -1,14 +1,28 @@
-import { Text, StyleSheet, ImageBackground, View, TextInput } from "react-native"
+import { Text, StyleSheet, ImageBackground, View, TextInput, TouchableOpacity, Alert } from "react-native"
 import { Image } from "expo-image"
-import { Link } from "expo-router"
+import { Link, router } from "expo-router"
 import React from 'react';
-
+import Checkbox from 'expo-checkbox';
 
 
 export default function Cadastrar() {
     const [name, setName] = React.useState('');
     const [email, setEmail] = React.useState('');
     const [senha, setSenha] = React.useState('');
+    const [isChecked, setIsChecked] = React.useState(false);
+
+    const handleCadastro = () => {
+        if (!name || !email || !senha) {
+            Alert.alert('Erro', 'Por favor, preencha todos os campos');
+            return;
+        }
+        if (!isChecked) {
+            Alert.alert('Erro', 'Você precisa aceitar os termos para continuar');
+            return;
+        }
+        // Aqui você pode adicionar a lógica para enviar os dados para seu backend
+        router.push('/home');
+    };
 
     return (
         <ImageBackground style={styles.container} source={require('../../assets/img/gradient2.png')} resizeMode="stretch">
@@ -50,10 +64,22 @@ export default function Cadastrar() {
                     />
                 </View>
 
+                {/*Checkbox Termos*/}
+                <View style={styles.checkboxContainer}>
+                    <Checkbox
+                        value={isChecked}
+                        onValueChange={setIsChecked}
+                        color={isChecked ? '#146FBA' : undefined}
+                    />
+                    <Text style={styles.checkboxText}>
+                        Li e aceito os <Text style={styles.link_text}>termos de uso</Text>
+                    </Text>
+                </View>
+
                 {/*Botão*/}
-                <Link href={'/home'} style={styles.link}>
+                <TouchableOpacity style={styles.link} onPress={handleCadastro}>
                     <Text style={styles.btn}>Cadastrar</Text>
-                </Link>
+                </TouchableOpacity>
             </View>
 
             <Text style={styles.text}>Já possui uma conta? <Link href={'/login'} style={styles.link_text}>Faça Login!</Link></Text>
@@ -137,5 +163,15 @@ const styles = StyleSheet.create({
     link_text: {
         fontWeight: 'bold',
         color: '#146FBA'
+    },
+    checkboxContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        marginVertical: 10
+    },
+    checkboxText: {
+        color: '#375A76',
+        fontSize: 14
     }
 })

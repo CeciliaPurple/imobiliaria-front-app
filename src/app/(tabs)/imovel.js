@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     infoText: {
-        fontSize: 20,
+        fontSize: 16,
         color: '#375A76',
     },
     container_room: {
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
         padding: 40,
     },
     container_card: {
-        width: '50%',
+        width: '100%',
         flexDirection: 'row',
         flexWrap: 'wrap',
         backgroundColor: '#E3F2FF',
