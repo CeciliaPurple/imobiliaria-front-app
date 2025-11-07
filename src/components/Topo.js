@@ -8,7 +8,7 @@ export default function Topo() {
   return (
     <View style={styles.header}>
       {/* Logo */}
-      <Link href={'/'}><Image
+      <Link href={'/home'}><Image
         source={require('../../assets/img/villa-logo-img.png')}
         style={styles.logo}
       />

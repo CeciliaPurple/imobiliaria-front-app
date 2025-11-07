@@ -6,48 +6,71 @@ import Fontisto from '@expo/vector-icons/Fontisto';
 
 export default function RootLayout() {
     return (
-        <Tabs screenOptions={{
+        <Tabs screenOptions={({ route }) => ({
             tabBarActiveTintColor: '#146FBA',
             tabBarInactiveTintColor: '#143047ff',
             tabBarLabelStyle: { fontSize: 8 },
             headerShown: false,
             tabBarShowLabel: false,
-        }}
+            tabBarStyle: [
+                {
+                    display: 'flex'
+                }
+            ]
+        })}
         >
-            <Tabs.Screen 
-                name="favoritos"
-                options={{ 
-                    title: "Home",
-                    tabBarIcon: ({color}) => <Ionicons name="heart" size={24} color={color}  /> 
-                }}
-            />
             <Tabs.Screen 
                 name="filtro"
                 options={{ 
-                    title: "Home",
-                    tabBarIcon: ({color}) => <Fontisto name="search" size={24} color={color} />
-                }}
-            />
-             <Tabs.Screen 
-                name="index"
-                options={{ 
-                    title: "Home",
-                    tabBarIcon: ({color}) => <FontAwesome5 name="home" size={24} color={color} />
+                    title: "Pesquisar",
+                    tabBarIcon: ({color, focused}) => <Fontisto name="search" size={focused ? 28 : 24} color={color} />,
                 }}
             />
             <Tabs.Screen 
-                name="agenda"
+                name="favoritos"
+                options={{ 
+                    title: "Favoritos",
+                    tabBarIcon: ({color, focused}) => <Ionicons name="heart" size={focused ? 28 : 24} color={color}  />,
+                }}
+            />
+             <Tabs.Screen 
+                name="home"
                 options={{ 
                     title: "Home",
-                    tabBarIcon: ({color}) => <FontAwesome name="calendar" size={24} color={color} />
+                    tabBarIcon: ({color, focused}) => <FontAwesome5 name="home" size={focused ? 28 : 24} color={color} />,
+                }}
+            />
+            <Tabs.Screen 
+                name="visitas"
+                options={{ 
+                    title: "Visitas",
+                    tabBarIcon: ({color, focused}) => <FontAwesome name="calendar" size={focused ? 28 : 24} color={color} />,
                 }}
             />
            
             <Tabs.Screen 
                 name="perfil"
                 options={{ 
-                    title: "Home",
-                    tabBarIcon: ({color}) => <FontAwesome name="user" size={24} color={color} />
+                    title: "Perfil",
+                    tabBarIcon: ({color, focused}) => <FontAwesome name="user" size={focused ? 28 : 24} color={color} />,
+                }}
+            />
+            <Tabs.Screen 
+                name="imovel"
+                options={{
+                    href: null
+                }}
+            />
+            <Tabs.Screen 
+                name="agenda"
+                options={{
+                    href: null
+                }}
+            />
+            <Tabs.Screen 
+                name="editarVisita"
+                options={{
+                    href: null
                 }}
             />
         </Tabs>

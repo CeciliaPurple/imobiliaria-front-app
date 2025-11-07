@@ -51,7 +51,7 @@ export default function Cadastrar() {
                 </View>
 
                 {/*Botão*/}
-                <Link href={'/'} style={styles.link}>
+                <Link href={'/home'} style={styles.link}>
                     <Text style={styles.btn}>Cadastrar</Text>
                 </Link>
             </View>

@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, ScrollView, ImageBackground, TouchableOpacity } from "react-native";
-import Topo from "../components/Topo";
+import Topo from "../../components/Topo";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import EvilIcons from '@expo/vector-icons/EvilIcons';
@@ -15,7 +15,7 @@ export default function Imovel() {
     const [quartos, setQuartos] = useState("0");
     const [banheiros, setBanheiros] = useState("0");
     const [vagas, setVagas] = useState("0");
-    const [imagem, setImagem] = useState(require("../../assets/img/casa1.jpg"));
+    const [imagem, setImagem] = useState(require("../../../assets/img/casa1.jpg"));
     const [favorito, setFavorito] = useState(false);
     const [ambientes, setAmbientes] = useState(["Área de Serviços", "Closet", "Escritório", "Piscina"]);
     const [conveniencias, setConveniencias] = useState(["Área de Serviços", "Closet", "Escritório", "Piscina"]);

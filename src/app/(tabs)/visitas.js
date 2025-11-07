@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, ScrollView } from "react-native"
-import Topo from "../components/Topo"
-import VisitaImovel from '../components/VisitaImovel'
+import Topo from "../../components/Topo"
+import VisitaImovel from '../../components/VisitaImovel'
 
 export default function Visitas() {
 

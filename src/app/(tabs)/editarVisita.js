@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Alert } from "react-native";
-import Topo from "../components/Topo";
+import Topo from "../../components/Topo";
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState, useEffect } from 'react';
 
@@ -210,6 +210,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         gap: 60,
+        marginBottom: 30,
     },
     buttonExcluir: {
         backgroundColor: '#DC3545',

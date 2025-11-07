@@ -39,7 +39,7 @@ export default function Login() {
                 </View>
 
                 {/*Botão*/}
-                <Link href={'/'} style={styles.link}>
+                <Link href={'/home'} style={styles.link}>
                     <Text style={styles.btn}>Entrar</Text>
                 </Link>
             </View>
