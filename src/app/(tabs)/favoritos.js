@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, ScrollView } from "react-native"
 
-import Topo from "../components/Topo"
-import Imovel from "../components/imovel"
+import Topo from "../../components/Topo"
+import Imovel from "../../components/imovel"
 
 export default function Favoritos() {
     return (

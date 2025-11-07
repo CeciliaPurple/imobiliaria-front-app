@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, ImageBackground, ScrollView } from "react-native"
 
-import Topo from "../components/Topo"
-import Imovel from "../components/imovel"
+import Topo from "../../components/Topo"
+import Imovel from "../../components/imovel"
 
 
 export default function Home() {
@@ -13,7 +13,7 @@ export default function Home() {
 
                 {/* Banner abaixo do Topo */}
                 <ImageBackground
-                    source={require("../../assets/img/banner.png")}
+                    source={require("../../../assets/img/banner.png")}
                     style={styles.banner}
                 >
                 </ImageBackground>
@@ -33,7 +33,7 @@ export default function Home() {
                             banheiros: "2",
                             vagas: "2",
                             preco: "450.000,00",
-                            imagem: require("../../assets/img/casa1.jpg"),
+                            imagem: require("../../../assets/img/casa1.jpg"),
                             favorito: false
                         }} />
 

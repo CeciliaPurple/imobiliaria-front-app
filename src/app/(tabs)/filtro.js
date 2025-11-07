@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
-import Topo from "../components/Topo";
-import Imovel from "../components/imovel";
+import Topo from "../../components/Topo";
+import Imovel from "../../components/imovel";
 import Ionicons from '@expo/vector-icons/Ionicons';
-import ModalFiltros from '../components/ModalFiltros'; 
+import ModalFiltros from '../../components/ModalFiltros'; 
 
 // DADOS DE EXEMPLO
 const LISTA_IMOVEIS = [
@@ -17,7 +17,7 @@ const LISTA_IMOVEIS = [
         quartos: "2",
         banheiros: "1",
         vagas: "1",
-        imagem: require("../../assets/img/casa1.jpg"),
+        imagem: require("../../../assets/img/casa1.jpg"),
         favorito: false,
         ambientes: ["Área de Serviços", "Closet", "Escritório", "Piscina"],
         conveniencias: ["Área de Serviços", "Closet", "Escritório", "Piscina"]
@@ -32,7 +32,7 @@ const LISTA_IMOVEIS = [
         quartos: "3",
         banheiros: "2",
         vagas: "2",
-        imagem: require("../../assets/img/casa1.jpg"),
+        imagem: require("../../../assets/img/casa1.jpg"),
         favorito: false,
         ambientes: ["Área de Serviços", "Closet", "Escritório", "Piscina"],
         conveniencias: ["Área de Serviços", "Closet", "Escritório", "Piscina"]

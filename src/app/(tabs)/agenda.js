@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity } from "react-native";
-import Topo from "../components/Topo";
+import Topo from "../../components/Topo";
 
 export default function Agenda() {
     return (
