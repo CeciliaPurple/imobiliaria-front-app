@@ -1,21 +1,22 @@
 import { View, Text, StyleSheet, ScrollView } from "react-native"
-import Topo from "../components/Topo"
-import VisitaImovel from '../components/VisitaImovel'
 
-export default function Visitas() {
+import Topo from "../../components/Topo"
+import Imovel from "../../components/imovel"
+
+export default function Favoritos() {
     return (
         <View style={styles.container}>
-            <Topo />
+            <Topo/>
             <ScrollView>
-                <Text style={styles.title}>Minhas Visitas</Text>
+                <Text style={styles.title}>Favoritos</Text>
 
-                <View style={styles.container_visita}>
-                    <VisitaImovel/>
-                    <VisitaImovel/>
-                    <VisitaImovel/>
-                    <VisitaImovel/>
-                    <VisitaImovel/>
+                <View style={styles.container_imovel}>
+                   <Imovel/> 
+                   <Imovel/> 
+                   <Imovel/> 
+                   <Imovel/> 
                 </View>
+                
             </ScrollView>
         </View>
     )
@@ -39,11 +40,11 @@ const styles = StyleSheet.create({
         marginTop: 10,
         marginBottom: 20,
     },
-    container_visita: {
+    container_imovel: {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         gap: 15,
         marginBottom: 60,
-    }
+    },
 })

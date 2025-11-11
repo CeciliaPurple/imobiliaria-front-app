@@ -8,26 +8,12 @@ export default function Topo() {
   return (
     <View style={styles.header}>
       {/* Logo */}
-      <Link href={'/'}><Image
+      <Link href={'/home'}><Image
         source={require('../../assets/img/villa-logo-img.png')}
         style={styles.logo}
       />
       </Link>
 
-      {/* Ícones */}
-      <View style={styles.iconsContainer}>
-        <TouchableOpacity style={styles.iconButton}>
-          <Link href={'/filtro'}><Ionicons name="search-outline" size={28} color="#333" /></Link>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.iconButton}>
-          <Link href={'/favoritos'}><Ionicons name="heart-outline" size={28} color="#e63946" /></Link>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.iconButton}>
-          <Link href={'/visitas'}><MaterialCommunityIcons name="calendar-outline" size={28} color="#333" /></Link>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 }
@@ -50,11 +36,5 @@ const styles = StyleSheet.create({
   logo: {
     width: 50,
     height: 40,
-  },
-  iconsContainer: {
-    flexDirection: 'row',
-  },
-  iconButton: {
-    marginLeft: 16,
   },
 });

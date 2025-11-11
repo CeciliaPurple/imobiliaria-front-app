@@ -1,0 +1,29 @@
+import { Stack } from "expo-router"
+
+export default function Layout() {
+    return (
+        <Stack screenOptions={{
+            headerShown: false
+        }}>
+            <Stack.Screen   
+                name="index"
+                options={{ headerShown: false }}
+            />
+             <Stack.Screen   
+                name="login"
+                options={{ title: "Login" }}
+            />
+             <Stack.Screen   
+                name="singup"
+                options={{ title: "Cadastrar" }}
+            />
+            <Stack.Screen   
+                name="edituser"
+                options={{ title: "Editar Perfil" }}
+            />
+            <Stack.Screen   
+                name="(tabs)"
+            />
+        </Stack>
+    )
+}

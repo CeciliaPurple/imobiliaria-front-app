@@ -1,15 +1,25 @@
 import { View, Text, StyleSheet, ImageBackground, ScrollView, Platform } from "react-native"
+import { useState } from "react";
 import { Image } from "expo-image"
 import { LinearGradient } from "expo-linear-gradient";
 import { Link } from "expo-router";
 
-export default function VisitasImovel() {
+export default function VisitasImovel({ data }) {
+    const [imagem, setImagem] = useState(data?.imagem || require("../../assets/img/luxo.jpg"));
+    const [nome, setNome] = useState(data?.nome || "Daniel Santana");
+    const [data_visita, setDataVisita] = useState(data?.data_visita || "25/08/2025");
+    const [horario, setHorario] = useState(data?.horario || "16:30");
+    const [telefone, setTelefone] = useState(data?.telefone || "(12) 99600-0000");
+    const [status, setStatus] = useState(data?.status || "Pendente");
     return (
-        <Link href={'/agenda'} asChild>
+        <Link href={`/editarVisita?id=${data?.id || '1'}`} asChild>
             <View style={styles.container_imovel}>
 
                 <View style={styles.img}>
-                    <Image style={styles.img} source={require('../../assets/img/luxo.jpg')} />
+                    <Image
+                        style={styles.img}
+                        source={imagem}
+                    />
                     <LinearGradient
                         colors={["transparent", "rgba(255, 255, 255, 0.7)"]}
                         style={styles.gradientOverlay}
@@ -22,28 +32,28 @@ export default function VisitasImovel() {
                     <View style={styles.container_text}>
                         <View style={styles.group_text}>
                             <Text style={styles.bold}>Nome: </Text>
-                            <Text style={styles.text}>Daniel Santana</Text>
+                            <Text style={styles.text}>{nome}</Text>
                         </View>
 
                         <View style={styles.group_text}>
                             <Text style={styles.bold}>Data: </Text>
-                            <Text style={styles.text}>25/08/2025</Text>
+                            <Text style={styles.text}>{data_visita}</Text>
                         </View>
 
                         <View style={styles.group_text}>
                             <Text style={styles.bold}>Horário: </Text>
-                            <Text style={styles.text}>16:30</Text>
+                            <Text style={styles.text}>{horario}</Text>
                         </View>
 
                         <View style={styles.group_text}>
                             <Text style={styles.bold}>Tel: </Text>
-                            <Text style={styles.text}>(12) 99600-0000</Text>
+                            <Text style={styles.text}>{telefone}</Text>
                         </View>
                     </View>
 
                     <View style={styles.container_status}>
                         <Text style={styles.status_text}>Status:</Text>
-                        <Text style={styles.status}>Pendente</Text>
+                        <Text style={styles.status}>{status}</Text>
                     </View>
                 </View>
 

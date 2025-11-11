@@ -1,18 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 
-export default function Imovel() {
+export default function Imovel({ data }) {
+  const [nome, setNome] = useState(data?.nome || "Nome");
+  const [area, setArea] = useState(data?.area || "000");
+  const [quartos, setQuartos] = useState(data?.quartos || "0");
+  const [banheiros, setBanheiros] = useState(data?.banheiros || "0");
+  const [vagas, setVagas] = useState(data?.vagas || "0");
+  const [preco, setPreco] = useState(data?.preco || "00000,00");
+  const [imagem, setImagem] = useState(data?.imagem || require("../../assets/img/luxo.jpg"));
+  const [favorito, setFavorito] = useState(data?.favorito || false);
   return (
     <View style={styles.card}>
       {/* Imagem + overlay */}
       <View style={styles.imgContainer}>
         <Image
           style={styles.img}
-          source={require("../../assets/img/luxo.jpg")}
+          source={imagem}
         />
 
         {/* Gradiente escuro embaixo */}
@@ -23,8 +31,14 @@ export default function Imovel() {
 
         {/* Nome + coração */}
         <View style={styles.overlay}>
-          <Text style={styles.name}>Nome</Text>
-          <Ionicons name="heart-outline" size={24} color="#fff" />
+          <Text style={styles.name}>{nome}</Text>
+          <TouchableOpacity onPress={() => setFavorito(!favorito)}>
+            <Ionicons 
+              name={favorito ? "heart" : "heart-outline"} 
+              size={24} 
+              color="#ffffffff" 
+            />
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -32,25 +46,25 @@ export default function Imovel() {
       <View style={styles.info}>
         <View style={styles.infoItem}>
           <Ionicons name="home-outline" size={16} color="#375A76" />
-          <Text style={styles.infoText}>000m²</Text>
+          <Text style={styles.infoText}>{area}m²</Text>
         </View>
         <View style={styles.infoItem}>
           <Ionicons name="bed-outline" size={16} color="#375A76" />
-          <Text style={styles.infoText}>0</Text>
+          <Text style={styles.infoText}>{quartos}</Text>
         </View>
         <View style={styles.infoItem}>
           <Ionicons name="water-outline" size={16} color="#375A76" />
-          <Text style={styles.infoText}>0</Text>
+          <Text style={styles.infoText}>{banheiros}</Text>
         </View>
         <View style={styles.infoItem}>
           <Ionicons name="car-outline" size={16} color="#375A76" />
-          <Text style={styles.infoText}>0</Text>
+          <Text style={styles.infoText}>{vagas}</Text>
         </View>
       </View>
 
       {/* Preço + botão */}
       <View style={styles.footer}>
-        <Text style={styles.price}>R$00000,00</Text>
+        <Text style={styles.price}>R${preco}</Text>
         <TouchableOpacity style={styles.button}>
           <Link href={'/imovel'}><Text style={styles.buttonText}>Ver mais</Text></Link>
           

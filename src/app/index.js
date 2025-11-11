@@ -1,89 +1,78 @@
-import { View, Text, StyleSheet, ImageBackground, ScrollView } from "react-native"
+import { Text, StyleSheet, ImageBackground, View } from "react-native"
+import { Image } from "expo-image"
+import { Link } from "expo-router"
 
-import Topo from "../components/Topo"
-import Imovel from "../components/imovel"
 
 
-export default function Home() {
-
+export default function Inicio() {
     return (
-        <View style={styles.container}>
-            <Topo />
-            <ScrollView style={styles.container}>
-            
-            {/* Banner abaixo do Topo */}
-            <ImageBackground
-                source={require("../../assets/img/banner.png")}
-                style={styles.banner}
-            >
-            </ImageBackground>
-
-            {/*Destaques*/}
-            <View style={styles.container_destaque}>
-                <Text style={styles.title}>Destaques</Text> 
-                <ScrollView
-                    horizontal={true}
-                    contentContainerStyle={styles.listaImoveis}
-                    showsHorizontalScrollIndicator={false}
-                >
-                    <Imovel />
-                    <Imovel />
-                    <Imovel />
-                    <Imovel />
-                    <Imovel />
-                </ScrollView>
+        <ImageBackground style={styles.container} source={require('../../assets/img/gradient2.png')} resizeMode="stretch">
+            <View style={styles.container_logo}>
+                <Image style={styles.logo} source={require('../../assets/img/villa-logo-nome.png')} />
+                <Text style={styles.text_logo}>O lugar certo para o seu próximo capítulo.</Text>
             </View>
 
-            {/*Lançamentos*/}
-            <View style={styles.container_destaque}>
-                <Text style={styles.title}>Lançamentos</Text>
-                <ScrollView
-                    horizontal={true}
-                    contentContainerStyle={styles.listaImoveis}
-                    showsHorizontalScrollIndicator={false}
-                >
-                    <Imovel />
-                    <Imovel />
-                    <Imovel />
-                    <Imovel />
-                    <Imovel />
-                </ScrollView>
+            <View style={styles.container_group}>
+                <Link href={'/login'} style={styles.link}>
+                    <Text style={styles.btn}>Iniciar</Text>
+                </Link>
+
+                <Text style={styles.text}>Não possui uma conta? <Link href={'/cadastrar'} style={styles.link_text}>Cadastre-se!</Link></Text>
             </View>
-        </ScrollView>
-        </View>
-        
+
+        </ImageBackground>
+
+
     )
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#f5f5f5",
-    },
-    banner: {
-        height: 200,
-        justifyContent: "center",
-        alignItems: "center",
-        marginTop: 0,
-        overflow: "hidden",
-    },
-    container_destaque: {
+        width: '100%',
         display: 'flex',
-        justifyContent: 'flex-start',
-        paddingTop: 20,
-        gap: 10,
-        marginBottom: 20
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: 50,
     },
-    listaImoveis: {
-        flexDirection: 'row',
-        gap: 10,
-        paddingHorizontal: 10,
-        paddingVertical: 10, 
+    container_logo: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 100
     },
-    title: {
-        fontSize: 20,
-        fontWeight: 700,
-        paddingLeft: 10,
+    text_logo: {
+        color: '#146FBA',
+        width: 250,
+        textAlign: 'center'
+    },
+    text: {
         color: '#375A76'
+    },
+    logo: {
+        width: 200,
+        height: 156
+    },
+    container_group: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 20
+    },
+    link: {
+        width: 'fit-content'
+    },
+    btn: {
+        backgroundColor: '#146FBA',
+        color: '#F2F1F6',
+        paddingHorizontal: 60,
+        paddingVertical: 10,
+        borderRadius: 10,
+        fontSize: 16,
+        fontWeight: 500
+    },
+    link_text: {
+        fontWeight: 'bold',
+        color: '#146FBA'
     }
-});
+})
