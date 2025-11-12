@@ -10,23 +10,59 @@ export default function Cadastrar() {
     const [email, setEmail] = React.useState('');
     const [senha, setSenha] = React.useState('');
     const [isChecked, setIsChecked] = React.useState(false);
+    const [loading, setLoading] = React.useState(false);
 
-    const handleCadastro = () => {
+    const handleCadastro = async () => {
         if (!name || !email || !senha) {
-            Alert.alert('Erro', 'Por favor, preencha todos os campos');
             return;
         }
         if (!isChecked) {
-            Alert.alert('Erro', 'Você precisa aceitar os termos para continuar');
             return;
         }
-        // Aqui você pode adicionar a lógica para enviar os dados para seu backend
-        router.push('/home');
+
+        setLoading(true);
+
+        try {
+            const userData = {
+                nome: name,      
+                email: email,
+                senha: senha     
+            };
+
+
+            
+            const response = await fetch('http://localhost:3100/usuario', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userData)
+            });
+
+            
+
+            const data = await response.json();
+            console.log('Dados recebidos:', data);
+            
+            if (!response.ok) {
+               
+                const errorMessage = data.error || data.menssage || data.message || 'Erro ao cadastrar usuário';
+                throw new Error(errorMessage);
+            }
+
+           
+            router.push('/login');
+        } catch (error) {
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
         <ImageBackground style={styles.container} source={require('../../assets/img/gradient2.png')} resizeMode="stretch">
-            <Link style={styles.link} href={'/enter'}><Image style={styles.logo} source={require('../../assets/img/villa-logo-img.png')} /></Link>
+            <Link style={styles.link} href={'/home'}>
+                <Image style={styles.logo} source={require('../../assets/img/villa-logo-img.png')} />
+            </Link>
             <View style={styles.container_input}>
                 <Text style={styles.title}>Cadastro</Text>
                 {/*Campo Nome*/}
@@ -37,6 +73,7 @@ export default function Cadastrar() {
                         placeholderTextColor={'rgba(55, 90, 118, 0.5)'}
                         value={name}
                         onChangeText={setName}
+                        editable={!loading}
                     />
                 </View>
 
@@ -49,6 +86,8 @@ export default function Cadastrar() {
                         value={email}
                         onChangeText={setEmail}
                         keyboardType="email-address"
+                        autoCapitalize="none"
+                        editable={!loading}
                     />
                 </View>
 
@@ -61,6 +100,7 @@ export default function Cadastrar() {
                         value={senha}
                         onChangeText={setSenha}
                         secureTextEntry={true}
+                        editable={!loading}
                     />
                 </View>
 
@@ -70,6 +110,7 @@ export default function Cadastrar() {
                         value={isChecked}
                         onValueChange={setIsChecked}
                         color={isChecked ? '#146FBA' : undefined}
+                        disabled={loading}
                     />
                     <Text style={styles.checkboxText}>
                         Li e aceito os <Text style={styles.link_text}>termos de uso</Text>
@@ -77,16 +118,22 @@ export default function Cadastrar() {
                 </View>
 
                 {/*Botão*/}
-                <TouchableOpacity style={styles.link} onPress={handleCadastro}>
-                    <Text style={styles.btn}>Cadastrar</Text>
+                <TouchableOpacity 
+                    style={styles.link} 
+                    onPress={handleCadastro}
+                    disabled={loading}
+                >
+                    <Text style={[styles.btn, loading && styles.btnDisabled]}>
+                        {loading ? 'Cadastrando...' : 'Cadastrar'}
+                    </Text>
                 </TouchableOpacity>
             </View>
 
-            <Text style={styles.text}>Já possui uma conta? <Link href={'/login'} style={styles.link_text}>Faça Login!</Link></Text>
+            <Text style={styles.text}>
+                Já possui uma conta? <Link href={'/login'} style={styles.link_text}>Faça Login!</Link>
+            </Text>
 
         </ImageBackground>
-
-
     )
 }
 
@@ -125,7 +172,7 @@ const styles = StyleSheet.create({
     title: {
         color: '#375A76',
         fontSize: 24,
-        fontWeight: 500,
+        fontWeight: '500',
         marginBottom: 10
     },
     input: {
@@ -133,10 +180,9 @@ const styles = StyleSheet.create({
         borderBottomColor: '#146FBA',
         borderRadius: 10,
         color: '#375A76',
-        fontWeight: 500,
+        fontWeight: '500',
         padding: 5,
         width: '70vw',
-
     },
     inputFocado: {
         borderBottomColor: 'transparent'
@@ -158,7 +204,11 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         borderRadius: 10,
         fontSize: 16,
-        fontWeight: 500
+        fontWeight: '500'
+    },
+    btnDisabled: {
+        backgroundColor: '#7BA5C9',
+        opacity: 0.7
     },
     link_text: {
         fontWeight: 'bold',
