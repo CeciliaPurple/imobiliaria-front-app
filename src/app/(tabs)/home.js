@@ -39,7 +39,7 @@ export default function Home() {
             const data = await response.json();
             console.log('✅ Imóveis recebidos:', data);
             
-            setImoveis(data); // Mantido conforme seu pedido
+            setImoveis(data);
         } catch (error) {
             console.error('❌ Erro ao buscar imóveis:', error);
             setError(error.message);
@@ -110,19 +110,14 @@ export default function Home() {
                                     <Imovel 
                                         key={imovel.id}
                                         data={{
+                                            id: imovel.id, // ✅ ADICIONADO!
                                             nome: imovel.titulo,
                                             area: imovel.metrosQuadrados?.toString() || "0",
                                             quartos: imovel.quartos?.toString() || "0",
                                             banheiros: imovel.banheiros?.toString() || "0",
                                             vagas: imovel.garagens?.toString() || "0",
-                                            preco: imovel.valor ? 
-                                                new Intl.NumberFormat('pt-BR', {
-                                                    minimumFractionDigits: 2,
-                                                    maximumFractionDigits: 2
-                                                }).format(imovel.valor) : "0,00",
-                                            imagem: imovel.foto ? 
-                                                { uri: imovel.foto } : 
-                                                require("../../../assets/img/luxo.jpg"),
+                                            preco: imovel.valor || 0, // Sem formatação aqui
+                                            imagem: imovel.foto || require("../../../assets/img/luxo.jpg"),
                                             favorito: imovel.favorito || false
                                         }}
                                     />
@@ -147,19 +142,14 @@ export default function Home() {
                                     <Imovel 
                                         key={imovel.id}
                                         data={{
+                                            id: imovel.id, // ✅ ADICIONADO!
                                             nome: imovel.titulo,
                                             area: imovel.metrosQuadrados?.toString() || "0",
                                             quartos: imovel.quartos?.toString() || "0",
                                             banheiros: imovel.banheiros?.toString() || "0",
                                             vagas: imovel.garagens?.toString() || "0",
-                                            preco: imovel.valor ? 
-                                                new Intl.NumberFormat('pt-BR', {
-                                                    minimumFractionDigits: 2,
-                                                    maximumFractionDigits: 2
-                                                }).format(imovel.valor) : "0,00",
-                                            imagem: imovel.foto ? 
-                                                { uri: imovel.foto } : 
-                                                require("../../../assets/img/luxo.jpg"),
+                                            preco: imovel.valor || 0, // Sem formatação aqui
+                                            imagem: imovel.foto || require("../../../assets/img/luxo.jpg"),
                                             favorito: imovel.favorito || false
                                         }}
                                     />

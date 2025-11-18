@@ -1,26 +1,76 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Imovel({ data }) {
-  const [nome, setNome] = useState(data?.nome || "Nome");
-  const [area, setArea] = useState(data?.area || "000");
-  const [quartos, setQuartos] = useState(data?.quartos || "0");
-  const [banheiros, setBanheiros] = useState(data?.banheiros || "0");
-  const [vagas, setVagas] = useState(data?.vagas || "0");
-  const [preco, setPreco] = useState(data?.preco || "00000,00");
-  const [imagem, setImagem] = useState(data?.imagem || require("../../assets/img/luxo.jpg"));
-  const [favorito, setFavorito] = useState(data?.favorito || false);
+  const [favorito, setFavorito] = useState(false);
+
+  // Verifica se está nos favoritos ao carregar
+  useEffect(() => {
+    const checkFavorito = async () => {
+      const favoritosString = await AsyncStorage.getItem('favoritos');
+      const favoritos = favoritosString ? JSON.parse(favoritosString) : [];
+      const jaEhFavorito = favoritos.some(fav => String(fav.id) === String(data?.id));
+      setFavorito(jaEhFavorito);
+    };
+    
+    if (data?.id) {
+      checkFavorito();
+    }
+  }, [data?.id]);
+
+  const handleToggleFavorite = async () => {
+    if (!data) return;
+
+    const favoritosString = await AsyncStorage.getItem('favoritos');
+    const favoritosAtuais = favoritosString ? JSON.parse(favoritosString) : [];
+    const imovelIndex = favoritosAtuais.findIndex(fav => String(fav.id) === String(data.id));
+
+    let novosFavoritos;
+
+    if (imovelIndex > -1) {
+      // Remove dos favoritos
+      novosFavoritos = favoritosAtuais.filter(fav => String(fav.id) !== String(data.id));
+      setFavorito(false);
+    } else {
+      // Adiciona aos favoritos
+      const imovelParaAdicionar = {
+        id: data.id,
+        nome: data.nome,
+        area: data.area,
+        quartos: data.quartos,
+        banheiros: data.banheiros,
+        vagas: data.vagas,
+        preco: data.preco,
+        imagem: data.imagem
+      };
+      
+      novosFavoritos = [...favoritosAtuais, imovelParaAdicionar];
+      setFavorito(true);
+    }
+
+    await AsyncStorage.setItem('favoritos', JSON.stringify(novosFavoritos));
+  };
+
+  // Formatar preço
+  const precoFormatado = data?.preco 
+    ? new Intl.NumberFormat('pt-BR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }).format(data.preco)
+    : "00.000,00";
+
   return (
     <View style={styles.card}>
       {/* Imagem + overlay */}
       <View style={styles.imgContainer}>
         <Image
           style={styles.img}
-          source={imagem}
+          source={typeof data?.imagem === 'string' ? { uri: data.imagem } : data?.imagem || require("../../assets/img/luxo.jpg")}
         />
 
         {/* Gradiente escuro embaixo */}
@@ -31,12 +81,14 @@ export default function Imovel({ data }) {
 
         {/* Nome + coração */}
         <View style={styles.overlay}>
-          <Text style={styles.name}>{nome}</Text>
-          <TouchableOpacity onPress={() => setFavorito(!favorito)}>
+          <Text style={styles.name} numberOfLines={1}>
+            {data?.nome || "Nome do Imóvel"}
+          </Text>
+          <TouchableOpacity onPress={handleToggleFavorite}>
             <Ionicons 
               name={favorito ? "heart" : "heart-outline"} 
               size={24} 
-              color="#ffffffff" 
+              color={favorito ? "#DE302A" : "#fff"} 
             />
           </TouchableOpacity>
         </View>
@@ -46,29 +98,34 @@ export default function Imovel({ data }) {
       <View style={styles.info}>
         <View style={styles.infoItem}>
           <Ionicons name="home-outline" size={16} color="#375A76" />
-          <Text style={styles.infoText}>{area}m²</Text>
+          <Text style={styles.infoText}>{data?.area || "000"}m²</Text>
         </View>
         <View style={styles.infoItem}>
           <Ionicons name="bed-outline" size={16} color="#375A76" />
-          <Text style={styles.infoText}>{quartos}</Text>
+          <Text style={styles.infoText}>{data?.quartos || "0"}</Text>
         </View>
         <View style={styles.infoItem}>
           <Ionicons name="water-outline" size={16} color="#375A76" />
-          <Text style={styles.infoText}>{banheiros}</Text>
+          <Text style={styles.infoText}>{data?.banheiros || "0"}</Text>
         </View>
         <View style={styles.infoItem}>
           <Ionicons name="car-outline" size={16} color="#375A76" />
-          <Text style={styles.infoText}>{vagas}</Text>
+          <Text style={styles.infoText}>{data?.vagas || "0"}</Text>
         </View>
       </View>
 
       {/* Preço + botão */}
       <View style={styles.footer}>
-        <Text style={styles.price}>R${preco}</Text>
-        <TouchableOpacity style={styles.button}>
-          <Link href={'/imovel'}><Text style={styles.buttonText}>Ver mais</Text></Link>
-          
-        </TouchableOpacity>
+        <Text style={styles.price}>R$ {precoFormatado}</Text>
+        <Link 
+          href={`/imovel/${data?.id}`}
+          asChild
+          onPress={() => console.log('🔗 Navegando para imóvel ID:', data?.id)}
+        >
+          <TouchableOpacity style={styles.button}>
+            <Text style={styles.buttonText}>Ver mais</Text>
+          </TouchableOpacity>
+        </Link>
       </View>
     </View>
   );
@@ -111,10 +168,12 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
+    flex: 1,
+    marginRight: 10,
   },
   info: {
     flexDirection: "row",
-    justifyContent: "start",
+    justifyContent: "flex-start",
     gap: 20,
     paddingVertical: 5,
     paddingHorizontal: 10,
@@ -129,7 +188,7 @@ const styles = StyleSheet.create({
     marginLeft: 4,
     color: "#375A76",
     fontSize: 14,
-    fontWeight: 500,
+    fontWeight: "500",
   },
   footer: {
     flexDirection: "row",
