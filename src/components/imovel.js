@@ -17,7 +17,7 @@ export default function Imovel({ data }) {
       const jaEhFavorito = favoritos.some(fav => String(fav.id) === String(data?.id));
       setFavorito(jaEhFavorito);
     };
-    
+
     if (data?.id) {
       checkFavorito();
     }
@@ -48,7 +48,7 @@ export default function Imovel({ data }) {
         preco: data.preco,
         imagem: data.imagem
       };
-      
+
       novosFavoritos = [...favoritosAtuais, imovelParaAdicionar];
       setFavorito(true);
     }
@@ -57,11 +57,11 @@ export default function Imovel({ data }) {
   };
 
   // Formatar preço
-  const precoFormatado = data?.preco 
+  const precoFormatado = data?.preco
     ? new Intl.NumberFormat('pt-BR', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      }).format(data.preco)
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(data.preco)
     : "00.000,00";
 
   return (
@@ -85,10 +85,10 @@ export default function Imovel({ data }) {
             {data?.nome || "Nome do Imóvel"}
           </Text>
           <TouchableOpacity onPress={handleToggleFavorite}>
-            <Ionicons 
-              name={favorito ? "heart" : "heart-outline"} 
-              size={24} 
-              color={favorito ? "#DE302A" : "#fff"} 
+            <Ionicons
+              name={favorito ? "heart" : "heart-outline"}
+              size={24}
+              color={favorito ? "#DE302A" : "#fff"}
             />
           </TouchableOpacity>
         </View>
@@ -117,11 +117,7 @@ export default function Imovel({ data }) {
       {/* Preço + botão */}
       <View style={styles.footer}>
         <Text style={styles.price}>R$ {precoFormatado}</Text>
-        <Link 
-          href={`/imovel/${data?.id}`}
-          asChild
-          onPress={() => console.log('🔗 Navegando para imóvel ID:', data?.id)}
-        >
+        <Link href={`/(tabs)/imovel/${data?.id}`} asChild>
           <TouchableOpacity style={styles.button}>
             <Text style={styles.buttonText}>Ver mais</Text>
           </TouchableOpacity>

@@ -1,52 +1,34 @@
-// Arquivo: src/app/imovel/[id].js
-import { View, Text, StyleSheet, ScrollView, ImageBackground, TouchableOpacity, ActivityIndicator } from "react-native";
-import Topo from "../../../components/Topo";
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, ActivityIndicator } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import EvilIcons from '@expo/vector-icons/EvilIcons';
-import { Link, useLocalSearchParams, router } from "expo-router";
+import { Link, useLocalSearchParams } from "expo-router";
 import { useState, useEffect } from "react";
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function ImovelDetalhes() {
+export default function Imovel() {
     const { id } = useLocalSearchParams();
-    const [imovel, setImovel] = useState(null);
+    
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [imovel, setImovel] = useState(null);
     const [favorito, setFavorito] = useState(false);
 
     useEffect(() => {
-        const fetchImovel = async () => {
-            // Verifica se o ID existe
-            if (!id) {
-                console.log('❌ ID não fornecido');
-                setError('ID do imóvel não fornecido');
-                setLoading(false);
-                return;
-            }
-
-            console.log('🔍 Buscando imóvel com ID:', id);
-
+        const buscarImovel = async () => {
             try {
+                console.log('🔍 Buscando imóvel ID:', id);
+                
                 const response = await fetch(`http://localhost:3100/imoveis/${id}`);
-
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('✅ Imóvel encontrado:', data);
-                    setImovel(data.imovel || data);
-                    
-                    // Verifica se o imóvel já está nos favoritos
-                    const favoritosString = await AsyncStorage.getItem('favoritos');
-                    const favoritos = favoritosString ? JSON.parse(favoritosString) : [];
-                    const jaEhFavorito = favoritos.some(fav => String(fav.id) === String(id));
-                    setFavorito(jaEhFavorito);
-
-                    setLoading(false);
-                } else {
-                    console.log('❌ Erro na resposta:', response.status);
-                    setError('Imóvel não encontrado');
-                    setLoading(false);
+                
+                if (!response.ok) {
+                    throw new Error('Imóvel não encontrado');
                 }
+                
+                const data = await response.json();
+                console.log('✅ Dados do imóvel:', data);
+                
+                setImovel(data.imovel || data);
+                setLoading(false);
             } catch (error) {
                 console.error('❌ Erro ao buscar imóvel:', error);
                 setError('Erro ao carregar imóvel');
@@ -54,149 +36,106 @@ export default function ImovelDetalhes() {
             }
         };
 
-        fetchImovel();
+        if (id) {
+            buscarImovel();
+        }
     }, [id]);
-
-    const handleToggleFavorite = async () => {
-        if (!imovel) return;
-
-        const favoritosString = await AsyncStorage.getItem('favoritos');
-        const favoritosAtuais = favoritosString ? JSON.parse(favoritosString) : [];
-        const imovelIndex = favoritosAtuais.findIndex(fav => String(fav.id) === String(imovel.id));
-
-        let novosFavoritos;
-
-        if (imovelIndex > -1) {
-            // Remove dos favoritos
-            novosFavoritos = favoritosAtuais.filter(fav => String(fav.id) !== String(imovel.id));
-            setFavorito(false);
-            console.log('✅ Removido dos favoritos');
-        } else {
-            // Adiciona aos favoritos
-            const imovelParaAdicionar = {
-                id: imovel.id,
-                foto: imovel.foto,
-                titulo: imovel.titulo,
-                metrosQuadrados: imovel.metrosQuadrados,
-                quartos: imovel.quartos,
-                banheiros: imovel.banheiros,
-                garagens: imovel.garagens,
-                localizacao: imovel.localizacao,
-                cidade: imovel.cidade || '',
-                valor: imovel.valor
-            };
-            
-            novosFavoritos = [...favoritosAtuais, imovelParaAdicionar];
-            setFavorito(true);
-            console.log('✅ Adicionado aos favoritos');
-        }
-
-        await AsyncStorage.setItem('favoritos', JSON.stringify(novosFavoritos));
-    };
-
-    const salvarUltimoImovel = async () => {
-        if (imovel) {
-            await AsyncStorage.setItem("ultimoImovel", JSON.stringify({
-                id: imovel.id,
-                foto: imovel.foto,
-                titulo: imovel.titulo,
-                localizacao: imovel.localizacao,
-                valor: imovel.valor,
-                metrosQuadrados: imovel.metrosQuadrados,
-                quartos: imovel.quartos,
-                banheiros: imovel.banheiros,
-                garagens: imovel.garagens
-            }));
-        }
-    };
 
     if (loading) {
         return (
-            <View style={[styles.container, styles.centerContent]}>
-                <Topo />
+            <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
                 <ActivityIndicator size="large" color="#146FBA" />
-                <Text style={styles.loadingText}>Carregando imóvel...</Text>
+                <Text style={{ marginTop: 10, color: '#375A76' }}>Carregando imóvel...</Text>
             </View>
         );
     }
 
     if (error || !imovel) {
         return (
-            <View style={[styles.container, styles.centerContent]}>
-                <Topo />
-                <Text style={styles.errorText}>{error || 'Imóvel não encontrado'}</Text>
-                <TouchableOpacity style={styles.button} onPress={() => router.back()}>
-                    <Text style={styles.buttonText}>Voltar</Text>
-                </TouchableOpacity>
+            <View style={[styles.container, { justifyContent: 'center', alignItems: 'center', padding: 20 }]}>
+                <Text style={{ color: '#375A76', fontSize: 18, marginBottom: 20 }}>
+                    {error || 'Imóvel não encontrado'}
+                </Text>
+                <Link href="/(tabs)/" asChild>
+                    <TouchableOpacity style={styles.button}>
+                        <Text style={styles.buttonText}>Voltar para Home</Text>
+                    </TouchableOpacity>
+                </Link>
             </View>
         );
     }
 
-    // Processar arrays de ambiente e conveniências
+    // Processar arrays de ambiente e conveniências (vem como string separada por vírgulas)
     const ambientes = imovel.ambiente ? imovel.ambiente.split(',').map(a => a.trim()) : [];
     const conveniencias = imovel.conveniencias ? imovel.conveniencias.split(',').map(c => c.trim()) : [];
 
     // Formatar valores
     const valorFormatado = new Intl.NumberFormat('pt-BR', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
+        style: 'currency',
+        currency: 'BRL',
+        minimumFractionDigits: 2
     }).format(imovel.valor);
 
     const iptuFormatado = imovel.iptu ? new Intl.NumberFormat('pt-BR', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
+        style: 'currency',
+        currency: 'BRL',
+        minimumFractionDigits: 2
     }).format(imovel.iptu) : 'Não informado';
 
     return (
         <View style={styles.container}>
-            <Topo />
             <ScrollView>
-                <ImageBackground
-                    source={{ uri: imovel.foto }}
-                    style={styles.img}
-                >
-                    {/* Gradiente escuro embaixo */}
+                {/* Imagem do imóvel */}
+                <View style={styles.imageContainer}>
+                    <Image
+                        source={{ uri: imovel.foto }}
+                        style={styles.img}
+                        resizeMode="cover"
+                    />
                     <LinearGradient
                         colors={["transparent", "rgba(0, 0, 0, 0.7)"]}
                         style={styles.gradientOverlay}
                         locations={[0.6, 1]}
                     />
-                    {/* Coração de favorito */}
                     <View style={styles.overlay}>
-                        <TouchableOpacity onPress={handleToggleFavorite}>
+                        <TouchableOpacity onPress={() => setFavorito(!favorito)}>
                             <Ionicons 
                                 name={favorito ? "heart" : "heart-outline"} 
                                 size={32} 
-                                color={favorito ? "#DE302A" : "#fff"} 
+                                color="#fff" 
                             />
                         </TouchableOpacity>
                     </View>
-                </ImageBackground>
+                </View>
 
+                {/* Título */}
                 <Text style={styles.titulo}>{imovel.titulo}</Text>
 
+                {/* Localização */}
                 <View style={styles.location}>
                     <EvilIcons name="location" size={32} color="#375A76" />
                     <Text style={styles.text_location}>{imovel.localizacao}</Text>
                 </View>
 
+                {/* Card de Preços */}
                 <View style={styles.container_price}>
                     <View style={styles.price}>
                         <Text style={styles.bold}>Valor Venda</Text>
-                        <Text style={styles.bold}>R$ {valorFormatado}</Text>
+                        <Text style={styles.bold}>{valorFormatado}</Text>
                     </View>
                     <View style={styles.price}>
                         <Text style={styles.light}>Valor IPTU</Text>
-                        <Text style={styles.light}>R$ {iptuFormatado}</Text>
+                        <Text style={styles.light}>{iptuFormatado}</Text>
                     </View>
 
+                    {/* Botões */}
                     <View style={styles.container_btn}>
-                        <Link href={`/agenda?imovel=${id}`} asChild>
-                            <TouchableOpacity style={styles.button} onPress={salvarUltimoImovel}>
+                        <Link href={`/(tabs)/agenda?imovel=${id}`} asChild>
+                            <TouchableOpacity style={styles.button}>
                                 <Text style={styles.buttonText}>Agendar Visita</Text>
                             </TouchableOpacity>
                         </Link>
-                        <Link href={'/'} asChild>
+                        <Link href="/(tabs)/" asChild>
                             <TouchableOpacity style={styles.button2}>
                                 <Text style={styles.buttonText2}>Contato</Text>
                             </TouchableOpacity>
@@ -204,6 +143,7 @@ export default function ImovelDetalhes() {
                     </View>
                 </View>
 
+                {/* Características do imóvel */}
                 <View style={styles.container_info}>
                     <View style={styles.infoItem}>
                         <Ionicons name="home-outline" size={32} color="#375A76" />
@@ -223,37 +163,38 @@ export default function ImovelDetalhes() {
                     </View>
                 </View>
 
-                {/* Ambientes */}
-                {ambientes.length > 0 && (
-                    <View style={styles.container_room}>
-                        <Text style={styles.bold}>Ambientes</Text>
-                        <View style={styles.container_card}>
-                            {ambientes.map((ambiente, index) => (
-                                <Text key={index} style={styles.text_card}>{ambiente}</Text>
-                            ))}
-                        </View>
-                    </View>
-                )}
+                {/* Ambientes e Conveniências */}
+                <View style={styles.container_room}>
+                    {ambientes.length > 0 && (
+                        <>
+                            <Text style={styles.bold}>Ambientes</Text>
+                            <View style={styles.container_card}>
+                                {ambientes.map((ambiente, index) => (
+                                    <Text key={index} style={styles.text_card}>{ambiente}</Text>
+                                ))}
+                            </View>
+                        </>
+                    )}
 
-                {/* Conveniências */}
-                {conveniencias.length > 0 && (
-                    <View style={styles.container_room}>
-                        <Text style={styles.bold}>Conveniências</Text>
-                        <View style={styles.container_card}>
-                            {conveniencias.map((conveniencia, index) => (
-                                <Text key={index} style={styles.text_card}>{conveniencia}</Text>
-                            ))}
-                        </View>
-                    </View>
-                )}
+                    {conveniencias.length > 0 && (
+                        <>
+                            <Text style={styles.bold}>Conveniências</Text>
+                            <View style={styles.container_card}>
+                                {conveniencias.map((conveniencia, index) => (
+                                    <Text key={index} style={styles.text_card}>{conveniencia}</Text>
+                                ))}
+                            </View>
+                        </>
+                    )}
 
-                {/* Descrição */}
-                {imovel.descricao && (
-                    <View style={styles.container_room}>
-                        <Text style={styles.bold}>Descrição</Text>
-                        <Text style={styles.description}>{imovel.descricao}</Text>
-                    </View>
-                )}
+                    {/* Descrição */}
+                    {imovel.descricao && (
+                        <>
+                            <Text style={styles.bold}>Descrição</Text>
+                            <Text style={styles.description}>{imovel.descricao}</Text>
+                        </>
+                    )}
+                </View>
             </ScrollView>
         </View>
     );
@@ -264,25 +205,14 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#F5F5F5",
     },
-    centerContent: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        gap: 20,
-    },
-    loadingText: {
-        fontSize: 16,
-        color: "#375A76",
-        marginTop: 10,
-    },
-    errorText: {
-        fontSize: 16,
-        color: "#DE302A",
-        textAlign: 'center',
-        paddingHorizontal: 20,
+    imageContainer: {
+        width: '100%',
+        height: 300,
+        position: 'relative',
     },
     img: {
         width: '100%',
-        height: 300
+        height: '100%',
     },
     gradientOverlay: {
         ...StyleSheet.absoluteFillObject,
@@ -337,6 +267,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: "700",
         color: "#375A76",
+        marginBottom: 10,
     },
     light: {
         fontSize: 16,
@@ -347,7 +278,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
-        gap: 10,
     },
     button: {
         backgroundColor: '#146FBA',
@@ -425,6 +355,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
         shadowRadius: 4,
+        marginBottom: 20,
     },
     text_card: {
         padding: 10,
