@@ -130,7 +130,7 @@ export default function Imovel() {
 
                     {/* Botões */}
                     <View style={styles.container_btn}>
-                        <Link href={`/(tabs)/agenda?imovel=${id}`} asChild>
+                        <Link href={`agendamento?imovel=${id}`} asChild>
                             <TouchableOpacity style={styles.button}>
                                 <Text style={styles.buttonText}>Agendar Visita</Text>
                             </TouchableOpacity>

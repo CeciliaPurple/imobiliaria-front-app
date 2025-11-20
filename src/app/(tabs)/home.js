@@ -26,18 +26,16 @@ export default function Home() {
             setLoading(true);
             setError(null);
             
-            console.log('🏠 Buscando imóveis do backend...');
             
             const response = await fetch('http://localhost:3100/imoveis');
             
-            console.log('📡 Status da resposta:', response.status);
             
             if (!response.ok) {
                 throw new Error('Erro ao buscar imóveis');
             }
             
             const data = await response.json();
-            console.log('✅ Imóveis recebidos:', data);
+           
             
             setImoveis(data);
         } catch (error) {
@@ -77,7 +75,6 @@ export default function Home() {
                 <View style={styles.errorContainer}>
                     <Text style={styles.errorText}>❌ {error}</Text>
                     <Text style={styles.errorSubtext}>
-                        Verifique se o backend está rodando
                     </Text>
                 </View>
             ) : (
@@ -110,7 +107,7 @@ export default function Home() {
                                     <Imovel 
                                         key={imovel.id}
                                         data={{
-                                            id: imovel.id, // ✅ ADICIONADO!
+                                            id: imovel.id, 
                                             nome: imovel.titulo,
                                             area: imovel.metrosQuadrados?.toString() || "0",
                                             quartos: imovel.quartos?.toString() || "0",
@@ -142,7 +139,7 @@ export default function Home() {
                                     <Imovel 
                                         key={imovel.id}
                                         data={{
-                                            id: imovel.id, // ✅ ADICIONADO!
+                                            id: imovel.id, 
                                             nome: imovel.titulo,
                                             area: imovel.metrosQuadrados?.toString() || "0",
                                             quartos: imovel.quartos?.toString() || "0",
