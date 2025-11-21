@@ -13,10 +13,6 @@ export default function Layout() {
                 name="login"
                 options={{ title: "Login" }}
             />
-             <Stack.Screen   
-                name="singup"
-                options={{ title: "Cadastrar" }}
-            />
             <Stack.Screen   
                 name="(tabs)"
             />
