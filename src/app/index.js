@@ -21,8 +21,6 @@ export default function Inicio() {
             </View>
 
         </ImageBackground>
-
-
     )
 }
 

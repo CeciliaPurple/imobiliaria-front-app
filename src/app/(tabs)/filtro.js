@@ -32,7 +32,7 @@ export default function Filtro() {
 
     const buscarImoveis = async () => {
         try {
-            console.log('🔄 Carregando imóveis da API...');
+   
             setLoading(true);
 
             const response = await fetch('http://localhost:3100/imoveis');
@@ -44,7 +44,7 @@ export default function Filtro() {
             const data = await response.json();
             const imoveisData = data.imovel || [];
 
-            console.log('✅ Imóveis carregados:', imoveisData.length);
+       
             
             setImoveis(imoveisData);
             setImoveisFiltrados(imoveisData);
@@ -67,18 +67,6 @@ export default function Filtro() {
     // Aplicar filtros sempre que mudarem - MESMA LÓGICA DO WEB
     useEffect(() => {
         let resultado = [...imoveis];
-
-        console.log('🔍 Aplicando filtros:', {
-            localizacao: filtros.localizacao || 'nenhuma',
-            tipos: filtros.tipos.length,
-            precoMin: filtros.precoMin || 'sem mínimo',
-            precoMax: filtros.precoMax || 'sem máximo',
-            quartos: filtros.quartos.length,
-            banheiros: filtros.banheiros.length,
-            vagas: filtros.vagas.length,
-            ambientes: filtros.ambientes.length,
-            conveniencias: filtros.conveniencias.length
-        });
 
         // Filtro de localização (busca em titulo e localizacao)
         if (filtros.localizacao.trim()) {
@@ -157,18 +145,16 @@ export default function Filtro() {
             });
         }
 
-        console.log('✅ Filtros aplicados. Imóveis encontrados:', resultado.length);
         setImoveisFiltrados(resultado);
     }, [filtros, imoveis]);
 
     const aplicarFiltros = (novosFiltros) => {
-        console.log('📋 Novos filtros recebidos:', novosFiltros);
         setFiltros(novosFiltros);
         setModalVisible(false);
     };
 
     const limparFiltros = () => {
-        console.log('🗑️ Limpando filtros...');
+       
         const filtrosVazios = {
             localizacao: '',
             tipos: [],

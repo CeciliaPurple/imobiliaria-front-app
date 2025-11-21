@@ -21,7 +21,7 @@ export default function Imovel() {
     useEffect(() => {
         const buscarImovel = async () => {
             try {
-                console.log('🔍 Buscando imóvel ID:', id);
+              
                 
                 const response = await fetch(`http://localhost:3100/imoveis/${id}`);
                 
@@ -30,7 +30,7 @@ export default function Imovel() {
                 }
                 
                 const data = await response.json();
-                console.log('✅ Dados do imóvel:', data);
+               
                 
                 setImovel(data.imovel || data);
                 setLoading(false);
@@ -56,7 +56,6 @@ export default function Imovel() {
                 const idString = String(id);
                 const isFavorito = favoritos.includes(idString);
                 setFavorito(isFavorito);
-                console.log('💖 Verificando favorito (detalhes):', idString, '→', isFavorito);
             } catch (error) {
                 console.error('Erro ao verificar favoritos:', error);
             }
@@ -82,7 +81,7 @@ export default function Imovel() {
                 favoritos = favoritos.filter(favId => String(favId) !== idString);
                 await AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(favoritos));
                 setFavorito(false);
-                console.log('💔 Removido dos favoritos (detalhes)');
+                
                 
                 // Feedback visual
                 Alert.alert(
@@ -95,7 +94,7 @@ export default function Imovel() {
                 favoritos.push(idString);
                 await AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(favoritos));
                 setFavorito(true);
-                console.log('❤️ Adicionado aos favoritos (detalhes)');
+                
                 
                 // Feedback visual
                 Alert.alert(

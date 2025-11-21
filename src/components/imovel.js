@@ -7,7 +7,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// MESMA CHAVE USADA NA PÁGINA DE DETALHES
+
 const FAVORITES_KEY = '@favoritos_imoveis';
 
 export default function Imovel({ data }) {
@@ -23,7 +23,6 @@ export default function Imovel({ data }) {
         const idString = String(data?.id);
         const isFavorito = favoritos.includes(idString);
         setFavorito(isFavorito);
-        console.log('💖 Verificando favorito (card):', idString, '→', isFavorito);
       } catch (error) {
         console.error('Erro ao verificar favorito:', error);
       }
@@ -46,12 +45,10 @@ export default function Imovel({ data }) {
         // Remove dos favoritos
         favoritos = favoritos.filter(id => id !== imovelId);
         setFavorito(false);
-        console.log('💔 Removido dos favoritos (card)');
       } else {
         // Adiciona aos favoritos
         favoritos.push(imovelId);
         setFavorito(true);
-        console.log('❤️ Adicionado aos favoritos (card)');
       }
 
       await AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(favoritos));

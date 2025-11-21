@@ -34,10 +34,10 @@ export default function Login() {
                 })
             });
 
-            console.log('📡 Status da resposta:', response.status);
+            
             
             const data = await response.json();
-            console.log('📦 Data completa recebida:', JSON.stringify(data, null, 2));
+            
 
             if (response.ok) {
                 console.log('✅ Login bem-sucedido!');
@@ -46,17 +46,13 @@ export default function Login() {
                 let userData;
                 
                 if (data.user) {
-                    console.log('👤 Formato: data.user');
                     userData = data.user;
-                } else if (data.usuario) {
-                    console.log('👤 Formato: data.usuario');
                     userData = data.usuario;
                 } else {
-                    console.log('👤 Formato: data direto');
                     userData = data;
                 }
                 
-                console.log('💾 Dados a serem salvos:', JSON.stringify(userData, null, 2));
+               
                 
                 // Salvar no AsyncStorage
                 try {
@@ -76,7 +72,6 @@ export default function Login() {
                     // Salvar token se houver
                     if (data.token) {
                         await AsyncStorage.setItem('userToken', data.token);
-                        console.log('🔑 Token salvo!');
                     }
                     
                 } catch (storageError) {

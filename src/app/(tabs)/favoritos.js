@@ -13,13 +13,13 @@ export default function Favoritos() {
     // Função para carregar favoritos
     const carregarFavoritos = async () => {
         try {
-            console.log('🔄 Carregando favoritos...');
+          
             setLoading(true);
             
             const favoritosString = await AsyncStorage.getItem('favoritos');
             const favoritosData = favoritosString ? JSON.parse(favoritosString) : [];
             
-            console.log('📦 Favoritos encontrados:', favoritosData.length);
+            
             setFavoritos(favoritosData);
         } catch (error) {
             console.error('❌ Erro ao carregar favoritos:', error);
