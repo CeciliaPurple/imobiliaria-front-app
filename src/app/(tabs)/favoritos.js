@@ -1,25 +1,85 @@
-import { View, Text, StyleSheet, ScrollView } from "react-native"
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from "react-native";
+import { useState, useEffect, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import Topo from "../../components/Topo"
-import Imovel from "../../components/imovel"
+import Topo from "../../components/Topo";
+import Imovel from "../../components/imovel";
 
 export default function Favoritos() {
+    const [favoritos, setFavoritos] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    // Função para carregar favoritos
+    const carregarFavoritos = async () => {
+        try {
+            console.log('🔄 Carregando favoritos...');
+            setLoading(true);
+            
+            const favoritosString = await AsyncStorage.getItem('favoritos');
+            const favoritosData = favoritosString ? JSON.parse(favoritosString) : [];
+            
+            console.log('📦 Favoritos encontrados:', favoritosData.length);
+            setFavoritos(favoritosData);
+        } catch (error) {
+            console.error('❌ Erro ao carregar favoritos:', error);
+            setFavoritos([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Recarregar sempre que a tela ganhar foco
+    useFocusEffect(
+        useCallback(() => {
+            carregarFavoritos();
+        }, [])
+    );
+
+    // Carregar na primeira renderização
+    useEffect(() => {
+        carregarFavoritos();
+    }, []);
+
+    if (loading) {
+        return (
+            <View style={styles.container}>
+                <Topo />
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color="#146FBA" />
+                    <Text style={styles.loadingText}>Carregando favoritos...</Text>
+                </View>
+            </View>
+        );
+    }
+
     return (
         <View style={styles.container}>
-            <Topo/>
+            <Topo />
             <ScrollView>
                 <Text style={styles.title}>Favoritos</Text>
 
-                <View style={styles.container_imovel}>
-                   <Imovel/> 
-                   <Imovel/> 
-                   <Imovel/> 
-                   <Imovel/> 
-                </View>
-                
+                {favoritos.length === 0 ? (
+                    <View style={styles.emptyContainer}>
+                        <Text style={styles.emptyText}>Você ainda não possui favoritos</Text>
+                        <Text style={styles.emptySubtext}>
+                            Adicione imóveis aos favoritos clicando no ❤️
+                        </Text>
+                    </View>
+                ) : (
+                    <View style={styles.container_imovel}>
+                        {favoritos.map((imovel) => (
+                            <Imovel 
+                                key={imovel.id} 
+                                data={imovel}
+                                onFavoritoChange={carregarFavoritos} // Recarrega quando remover
+                            />
+                        ))}
+                    </View>
+                )}
             </ScrollView>
         </View>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
@@ -47,4 +107,34 @@ const styles = StyleSheet.create({
         gap: 15,
         marginBottom: 60,
     },
-})
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    loadingText: {
+        marginTop: 10,
+        fontSize: 16,
+        color: '#375A76',
+    },
+    emptyContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 40,
+        marginTop: 100,
+    },
+    emptyText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#375A76',
+        marginBottom: 10,
+        textAlign: 'center',
+    },
+    emptySubtext: {
+        fontSize: 14,
+        color: '#6C757D',
+        textAlign: 'center',
+    },
+});

@@ -1,9 +1,12 @@
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, ActivityIndicator, Alert } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import EvilIcons from '@expo/vector-icons/EvilIcons';
 import { Link, useLocalSearchParams } from "expo-router";
 import { useState, useEffect } from "react";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const FAVORITES_KEY = '@favoritos_imoveis';
 
 export default function Imovel() {
     const { id } = useLocalSearchParams();
@@ -12,7 +15,9 @@ export default function Imovel() {
     const [error, setError] = useState(null);
     const [imovel, setImovel] = useState(null);
     const [favorito, setFavorito] = useState(false);
+    const [loadingFavorito, setLoadingFavorito] = useState(false);
 
+    // Carregar imóvel da API
     useEffect(() => {
         const buscarImovel = async () => {
             try {
@@ -41,6 +46,72 @@ export default function Imovel() {
         }
     }, [id]);
 
+    // Verificar se o imóvel está nos favoritos
+    useEffect(() => {
+        const verificarFavorito = async () => {
+            try {
+                const favoritosJSON = await AsyncStorage.getItem(FAVORITES_KEY);
+                const favoritos = favoritosJSON ? JSON.parse(favoritosJSON) : [];
+                // IMPORTANTE: Converte para string para comparação correta
+                const idString = String(id);
+                const isFavorito = favoritos.includes(idString);
+                setFavorito(isFavorito);
+                console.log('💖 Verificando favorito (detalhes):', idString, '→', isFavorito);
+            } catch (error) {
+                console.error('Erro ao verificar favoritos:', error);
+            }
+        };
+
+        if (id) {
+            verificarFavorito();
+        }
+    }, [id]);
+
+    // Toggle favorito
+    const toggleFavorito = async () => {
+        try {
+            setLoadingFavorito(true);
+            
+            const favoritosJSON = await AsyncStorage.getItem(FAVORITES_KEY);
+            let favoritos = favoritosJSON ? JSON.parse(favoritosJSON) : [];
+            // IMPORTANTE: Converte para string
+            const idString = String(id);
+
+            if (favorito) {
+                // Remover dos favoritos - compara como string
+                favoritos = favoritos.filter(favId => String(favId) !== idString);
+                await AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(favoritos));
+                setFavorito(false);
+                console.log('💔 Removido dos favoritos (detalhes)');
+                
+                // Feedback visual
+                Alert.alert(
+                    'Removido dos Favoritos',
+                    'Este imóvel foi removido da sua lista de favoritos.',
+                    [{ text: 'OK' }]
+                );
+            } else {
+                // Adicionar aos favoritos - salva como string
+                favoritos.push(idString);
+                await AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(favoritos));
+                setFavorito(true);
+                console.log('❤️ Adicionado aos favoritos (detalhes)');
+                
+                // Feedback visual
+                Alert.alert(
+                    'Adicionado aos Favoritos',
+                    'Este imóvel foi adicionado à sua lista de favoritos!',
+                    [{ text: 'OK' }]
+                );
+            }
+        } catch (error) {
+            console.error('Erro ao atualizar favoritos:', error);
+            Alert.alert('Erro', 'Não foi possível atualizar os favoritos.');
+        } finally {
+            setLoadingFavorito(false);
+        }
+    };
+
     if (loading) {
         return (
             <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
@@ -56,7 +127,7 @@ export default function Imovel() {
                 <Text style={{ color: '#375A76', fontSize: 18, marginBottom: 20 }}>
                     {error || 'Imóvel não encontrado'}
                 </Text>
-                <Link href="/(tabs)/" asChild>
+                <Link href="/home" asChild>
                     <TouchableOpacity style={styles.button}>
                         <Text style={styles.buttonText}>Voltar para Home</Text>
                     </TouchableOpacity>
@@ -65,7 +136,7 @@ export default function Imovel() {
         );
     }
 
-    // Processar arrays de ambiente e conveniências (vem como string separada por vírgulas)
+    // Processar arrays de ambiente e conveniências
     const ambientes = imovel.ambiente ? imovel.ambiente.split(',').map(a => a.trim()) : [];
     const conveniencias = imovel.conveniencias ? imovel.conveniencias.split(',').map(c => c.trim()) : [];
 
@@ -98,12 +169,20 @@ export default function Imovel() {
                         locations={[0.6, 1]}
                     />
                     <View style={styles.overlay}>
-                        <TouchableOpacity onPress={() => setFavorito(!favorito)}>
-                            <Ionicons 
-                                name={favorito ? "heart" : "heart-outline"} 
-                                size={32} 
-                                color="#fff" 
-                            />
+                        <TouchableOpacity 
+                            onPress={toggleFavorito}
+                            disabled={loadingFavorito}
+                            style={styles.favoritoButton}
+                        >
+                            {loadingFavorito ? (
+                                <ActivityIndicator size="small" color="#fff" />
+                            ) : (
+                                <Ionicons 
+                                    name={favorito ? "heart" : "heart-outline"} 
+                                    size={32} 
+                                    color={favorito ? "#FF4444" : "#fff"} 
+                                />
+                            )}
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -130,12 +209,12 @@ export default function Imovel() {
 
                     {/* Botões */}
                     <View style={styles.container_btn}>
-                        <Link href={`agendamento?imovel=${id}`} asChild>
+                        <Link href={`/agendamento?imovel=${id}`} asChild>
                             <TouchableOpacity style={styles.button}>
                                 <Text style={styles.buttonText}>Agendar Visita</Text>
                             </TouchableOpacity>
                         </Link>
-                        <Link href="/(tabs)/" asChild>
+                        <Link href="/home" asChild>
                             <TouchableOpacity style={styles.button2}>
                                 <Text style={styles.buttonText2}>Contato</Text>
                             </TouchableOpacity>
@@ -225,6 +304,11 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "flex-end",
         alignItems: "center",
+    },
+    favoritoButton: {
+        padding: 8,
+        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+        borderRadius: 50,
     },
     titulo: {
         fontSize: 20,

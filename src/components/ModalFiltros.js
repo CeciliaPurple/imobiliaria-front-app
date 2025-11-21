@@ -3,11 +3,27 @@ import { Modal, View, Text, StyleSheet, TextInput, ScrollView, Pressable } from 
 import Ionicons from '@expo/vector-icons/Ionicons';
 import BotaoSelecao from './BotaoSelecao';
 
-//DADOS PARA OS FILTROS DE BOTÕES
-const TIPOS_IMOVEIS = ['Casas', 'Apartamento', 'Coberturas', 'Loft', 'Sítios e Chácaras', 'Flat'];
-const AMBIENTES = ['Área de Serviços', 'Closet', 'Escritório', 'Jardim', 'Lavanderia', 'Piscina', 'Quintal'];
-const CONVENIENCIAS = ['Ar-condicionado', 'Armários Planejados', 'Hidromassagem', 'Mobiliado'];
-
+// DADOS PARA OS FILTROS - MESMOS DO WEB
+const TIPOS_IMOVEIS = ['Casa', 'Apartamento', 'Cobertura', 'Loft', 'Sítio', 'Flat'];
+const AMBIENTES = [
+    'Área de Serviços',
+    'Área Gourmet', 
+    'Closet', 
+    'Escritório', 
+    'Jardim', 
+    'Lavanderia', 
+    'Piscina', 
+    'Quintal',
+    'Sala integrada'
+];
+const CONVENIENCIAS = [
+    'Academia',
+    'Ar-condicionado', 
+    'Armários Planejados', 
+    'Hidromassagem', 
+    'Mobiliado',
+    'Segurança 24h'
+];
 
 export default function ModalFiltros({ visible, onClose, onApply, filtrosIniciais }) {
     
@@ -26,11 +42,16 @@ export default function ModalFiltros({ visible, onClose, onApply, filtrosIniciai
         }));
     };
 
+    // Para tipos (seleção única transformada em array)
     const handleSingleSelect = (campo, valor) => {
-        const novoValor = filtros[campo] === valor ? '' : valor;
-        handleInputChange(campo, novoValor);
+        const listaAtual = filtros[campo];
+        const novaLista = listaAtual.includes(valor)
+            ? listaAtual.filter(item => item !== valor)
+            : [...listaAtual, valor];
+        handleInputChange(campo, novaLista);
     };
 
+    // Para múltipla seleção (ambientes, conveniências)
     const handleMultipleSelect = (campo, valor) => {
         const listaAtual = filtros[campo];
         const novaLista = listaAtual.includes(valor)
@@ -40,45 +61,73 @@ export default function ModalFiltros({ visible, onClose, onApply, filtrosIniciai
         handleInputChange(campo, novaLista);
     };
 
-    const handleCounterChange = (campo, operacao) => {
-        const valorAtual = filtros[campo];
-        let novoValor = valorAtual;
-
-        if (operacao === 'increment') {
-            novoValor = valorAtual + 1;
-        } else if (operacao === 'decrement' && valorAtual > 0) {
-            novoValor = valorAtual - 1;
-        } else if (operacao === 'reset') {
-            novoValor = 0;
-        }
-
-        handleInputChange(campo, novoValor);
+    // Para quartos, banheiros, vagas (checkboxes com números)
+    const handleNumberCheckbox = (campo, numero) => {
+        const listaAtual = filtros[campo];
+        const novaLista = listaAtual.includes(numero)
+            ? listaAtual.filter(item => item !== numero)
+            : [...listaAtual, numero];
+        handleInputChange(campo, novaLista);
     };
 
-    const handleApplyPress = () => onApply(filtros);
-    const handleClearAndClose = () => onApply({ localizacao: '', tipoImovel: '', precoMin: '', precoMax: '', quartos: 0, banheiros: 0, garagens: 0, ambientes: [], conveniencias: [] });
+    const formatarPreco = (valor) => {
+        const numeros = valor.replace(/\D/g, '');
+        const numero = Number(numeros);
+        if (numero === 0) return '';
+        return numero.toLocaleString('pt-BR');
+    };
 
-    const CounterInput = ({ label, campo }) => (
-        <View>
+    const handlePrecoChange = (campo, texto) => {
+        const numeros = texto.replace(/\D/g, '');
+        handleInputChange(campo, numeros);
+    };
+
+    const handleApplyPress = () => {
+        console.log('📋 Filtros a serem aplicados:', filtros);
+        onApply(filtros);
+    };
+
+    const handleClearAndClose = () => {
+        console.log('🗑️ Limpando filtros do modal');
+        const filtrosVazios = {
+            localizacao: '',
+            tipos: [],
+            precoMin: '',
+            precoMax: '',
+            quartos: [],
+            banheiros: [],
+            vagas: [],
+            ambientes: [],
+            conveniencias: []
+        };
+        onApply(filtrosVazios);
+    };
+
+    // Componente para checkboxes de números (quartos, banheiros, vagas)
+    const NumberCheckboxGroup = ({ label, campo, opcoes = [1, 2, 3, 4, 5] }) => (
+        <View style={modalStyles.numberContainer}>
             <Text style={modalStyles.sectionTitle}>{label}</Text>
-            <View style={modalStyles.counterGroup}>
-                <Pressable 
-                    style={modalStyles.counterButton} 
-                    onPress={() => handleCounterChange(campo, 'decrement')}
-                >
-                    <Text style={modalStyles.counterButtonText}>-1</Text>
-                </Pressable>
-                <Text style={modalStyles.counterValue}>{filtros[campo]}</Text>
-                <Pressable 
-                    style={modalStyles.counterButton} 
-                    onPress={() => handleCounterChange(campo, 'increment')}
-                >
-                    <Text style={modalStyles.counterButtonText}>+1</Text>
-                </Pressable>
+            <View style={modalStyles.numberGroup}>
+                {opcoes.map(num => (
+                    <Pressable
+                        key={num}
+                        style={[
+                            modalStyles.numberButton,
+                            filtros[campo].includes(num) && modalStyles.numberButtonSelected
+                        ]}
+                        onPress={() => handleNumberCheckbox(campo, num)}
+                    >
+                        <Text style={[
+                            modalStyles.numberButtonText,
+                            filtros[campo].includes(num) && modalStyles.numberButtonTextSelected
+                        ]}>
+                            {num === 5 ? '+5' : `+${num}`}
+                        </Text>
+                    </Pressable>
+                ))}
             </View>
         </View>
     );
-    // -----------------------------------------------------------------------------
 
     return (
         <Modal
@@ -90,7 +139,7 @@ export default function ModalFiltros({ visible, onClose, onApply, filtrosIniciai
             <View style={modalStyles.centeredView}>
                 <View style={modalStyles.modalView}>
                     
-                    {/*CABEÇALHO*/}
+                    {/* CABEÇALHO */}
                     <View style={modalStyles.header}>
                         <Ionicons name="filter" size={18} color="#146fba" />
                         <Text style={modalStyles.modalTitle}>Filtros</Text>
@@ -99,61 +148,71 @@ export default function ModalFiltros({ visible, onClose, onApply, filtrosIniciai
                         </Pressable>
                     </View>
 
-                    <ScrollView style={modalStyles.scrollViewContent}>
+                    <ScrollView style={modalStyles.scrollViewContent} showsVerticalScrollIndicator={false}>
                         
-                        {/*LOCALIZAÇÃO*/}
+                        {/* LOCALIZAÇÃO */}
                         <Text style={modalStyles.sectionTitle}>Localização</Text>
                         <TextInput 
                             style={modalStyles.input} 
-                            placeholder="Digite..."
+                            placeholder="Digite bairro, cidade..."
                             value={filtros.localizacao}
                             onChangeText={(text) => handleInputChange('localizacao', text)}
                         />
 
-                        {/*TIPOS DE IMÓVEIS*/}
+                        {/* TIPOS DE IMÓVEIS */}
                         <Text style={modalStyles.sectionTitle}>Tipos de Imóveis</Text>
                         <View style={modalStyles.buttonGroup}>
                             {TIPOS_IMOVEIS.map(tipo => (
                                 <BotaoSelecao 
                                     key={tipo}
                                     label={tipo}
-                                    isSelected={filtros.tipoImovel === tipo}
-                                    onPress={() => handleSingleSelect('tipoImovel', tipo)}
+                                    isSelected={filtros.tipos.includes(tipo)}
+                                    onPress={() => handleSingleSelect('tipos', tipo)}
                                 />
                             ))}
                         </View>
 
-                        {/*PREÇO*/}
-                        <Text style={modalStyles.sectionTitle}>Preço</Text>
+                        {/* PREÇO */}
+                        <Text style={modalStyles.sectionTitle}>Faixa de Preço</Text>
                         <View style={modalStyles.priceGroup}>
                             <View style={modalStyles.priceInputContainer}>
-                                <Text style={modalStyles.priceLabel}>a partir de</Text>
-                                <TextInput 
-                                    style={modalStyles.priceInput} 
-                                    keyboardType="numeric"
-                                    placeholder="R$ 0,00"
-                                    value={filtros.precoMin}
-                                    onChangeText={(text) => handleInputChange('precoMin', text.replace(/[^0-9]/g, ''))}
-                                />
+                                <Text style={modalStyles.priceLabel}>A partir de</Text>
+                                <View style={modalStyles.priceInputWrapper}>
+                                    <Text style={modalStyles.pricePrefix}>R$</Text>
+                                    <TextInput 
+                                        style={modalStyles.priceInput} 
+                                        keyboardType="numeric"
+                                        placeholder="0"
+                                        value={filtros.precoMin ? formatarPreco(filtros.precoMin) : ''}
+                                        onChangeText={(text) => handlePrecoChange('precoMin', text)}
+                                    />
+                                </View>
                             </View>
                             <View style={modalStyles.priceInputContainer}>
                                 <Text style={modalStyles.priceLabel}>Até</Text>
-                                <TextInput 
-                                    style={modalStyles.priceInput} 
-                                    keyboardType="numeric"
-                                    placeholder="R$ 0,00"
-                                    value={filtros.precoMax}
-                                    onChangeText={(text) => handleInputChange('precoMax', text.replace(/[^0-9]/g, ''))}
-                                />
+                                <View style={modalStyles.priceInputWrapper}>
+                                    <Text style={modalStyles.pricePrefix}>R$</Text>
+                                    <TextInput 
+                                        style={modalStyles.priceInput} 
+                                        keyboardType="numeric"
+                                        placeholder="0"
+                                        value={filtros.precoMax ? formatarPreco(filtros.precoMax) : ''}
+                                        onChangeText={(text) => handlePrecoChange('precoMax', text)}
+                                    />
+                                </View>
                             </View>
                         </View>
 
-                        {/*CONTADORES*/}
-                        <CounterInput label="Quartos" campo="quartos" />
-                        <CounterInput label="Banheiros" campo="banheiros" />
-                        <CounterInput label="Garagens" campo="garagens" />
+                        {/* QUARTOS */}
+                        <NumberCheckboxGroup label="Quartos" campo="quartos" />
 
-                        {/*AMBIENTES*/}
+                        {/* BANHEIROS */}
+                        <NumberCheckboxGroup label="Banheiros" campo="banheiros" />
+
+                        {/* VAGAS */}
+                        <NumberCheckboxGroup label="Vagas" campo="vagas" />
+
+                        {/* AMBIENTES */}
                         <Text style={modalStyles.sectionTitle}>Ambientes</Text>
                         <View style={modalStyles.buttonGroup}>
                             {AMBIENTES.map(ambiente => (
@@ -166,7 +225,7 @@ export default function ModalFiltros({ visible, onClose, onApply, filtrosIniciai
                             ))}
                         </View>
 
-                        {/*CONVENIÊNCIAS*/}
+                        {/* CONVENIÊNCIAS */}
                         <Text style={modalStyles.sectionTitle}>Conveniências</Text>
                         <View style={modalStyles.buttonGroup}>
                             {CONVENIENCIAS.map(conv => (
@@ -188,13 +247,15 @@ export default function ModalFiltros({ visible, onClose, onApply, filtrosIniciai
                             style={[modalStyles.actionButton, modalStyles.clearButton]}
                             onPress={handleClearAndClose}
                         >
-                            <Text style={modalStyles.clearButtonText}>Limpar Filtros</Text>
+                            <Ionicons name="trash-outline" size={18} color="#333" />
+                            <Text style={modalStyles.clearButtonText}>Limpar</Text>
                         </Pressable>
                         <Pressable 
                             style={[modalStyles.actionButton, modalStyles.applyButton]}
                             onPress={handleApplyPress}
                         >
-                            <Text style={modalStyles.applyButtonText}>Aplicar Filtros</Text>
+                            <Ionicons name="checkmark-circle" size={18} color="#fff" />
+                            <Text style={modalStyles.applyButtonText}>Aplicar</Text>
                         </Pressable>
                     </View>
 
@@ -276,52 +337,66 @@ const modalStyles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginBottom: 10,
+        gap: 10,
     },
     priceInputContainer: {
-        width: '48%',
+        flex: 1,
     },
     priceLabel: {
         fontSize: 12,
         color: '#777',
         marginBottom: 5,
     },
-    priceInput: {
+    priceInputWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
         borderBottomWidth: 1,
         borderBottomColor: '#ccc',
         paddingVertical: 5,
-        textAlign: 'center',
+    },
+    pricePrefix: {
+        fontSize: 16,
+        color: '#146fba',
+        fontWeight: '600',
+        marginRight: 5,
+    },
+    priceInput: {
+        flex: 1,
         fontSize: 16,
         color: '#333',
-        backgroundColor: '#fff',
+        padding: 0,
     },
 
-    counterGroup: {
-        flexDirection: 'row',
-        alignItems: 'center',
+    // Estilos para checkboxes de números
+    numberContainer: {
         marginBottom: 15,
     },
-    counterButton: {
-        backgroundColor: '#F0F8FF', 
-        borderRadius: 5,
-        paddingVertical: 8,
-        paddingHorizontal: 12,
-        marginHorizontal: 5,
-        borderWidth: 1,
-        borderColor: '#E0E0E0',
+    numberGroup: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 8,
     },
-    counterButtonText: {
-        fontSize: 14,
-        fontWeight: 'bold',
+    numberButton: {
+        backgroundColor: '#F0F8FF',
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 8,
+        paddingVertical: 10,
+        paddingHorizontal: 16,
+        minWidth: 50,
+        alignItems: 'center',
+    },
+    numberButtonSelected: {
+        backgroundColor: '#146fba',
+        borderColor: '#146fba',
+    },
+    numberButtonText: {
+        fontSize: 15,
+        fontWeight: '600',
         color: '#146fba',
     },
-    counterValue: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#333',
-        minWidth: 40,
-        textAlign: 'center',
-        borderBottomWidth: 1,
-        borderBottomColor: '#ccc',
+    numberButtonTextSelected: {
+        color: '#fff',
     },
 
     buttonContainer: {
@@ -339,6 +414,9 @@ const modalStyles = StyleSheet.create({
         padding: 12,
         elevation: 2,
         alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        gap: 8,
     },
     applyButton: {
         backgroundColor: '#146fba',

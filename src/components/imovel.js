@@ -1,3 +1,4 @@
+// imovel.js - CARD DE LISTAGEM (componente)
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Image } from "expo-image";
@@ -6,16 +7,26 @@ import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+// MESMA CHAVE USADA NA PÁGINA DE DETALHES
+const FAVORITES_KEY = '@favoritos_imoveis';
+
 export default function Imovel({ data }) {
   const [favorito, setFavorito] = useState(false);
 
   // Verifica se está nos favoritos ao carregar
   useEffect(() => {
     const checkFavorito = async () => {
-      const favoritosString = await AsyncStorage.getItem('favoritos');
-      const favoritos = favoritosString ? JSON.parse(favoritosString) : [];
-      const jaEhFavorito = favoritos.some(fav => String(fav.id) === String(data?.id));
-      setFavorito(jaEhFavorito);
+      try {
+        const favoritosJSON = await AsyncStorage.getItem(FAVORITES_KEY);
+        const favoritos = favoritosJSON ? JSON.parse(favoritosJSON) : [];
+        // Converte o ID para string para comparação
+        const idString = String(data?.id);
+        const isFavorito = favoritos.includes(idString);
+        setFavorito(isFavorito);
+        console.log('💖 Verificando favorito (card):', idString, '→', isFavorito);
+      } catch (error) {
+        console.error('Erro ao verificar favorito:', error);
+      }
     };
 
     if (data?.id) {
@@ -24,36 +35,29 @@ export default function Imovel({ data }) {
   }, [data?.id]);
 
   const handleToggleFavorite = async () => {
-    if (!data) return;
+    if (!data?.id) return;
 
-    const favoritosString = await AsyncStorage.getItem('favoritos');
-    const favoritosAtuais = favoritosString ? JSON.parse(favoritosString) : [];
-    const imovelIndex = favoritosAtuais.findIndex(fav => String(fav.id) === String(data.id));
+    try {
+      const favoritosJSON = await AsyncStorage.getItem(FAVORITES_KEY);
+      let favoritos = favoritosJSON ? JSON.parse(favoritosJSON) : [];
+      const imovelId = String(data.id);
 
-    let novosFavoritos;
+      if (favorito) {
+        // Remove dos favoritos
+        favoritos = favoritos.filter(id => id !== imovelId);
+        setFavorito(false);
+        console.log('💔 Removido dos favoritos (card)');
+      } else {
+        // Adiciona aos favoritos
+        favoritos.push(imovelId);
+        setFavorito(true);
+        console.log('❤️ Adicionado aos favoritos (card)');
+      }
 
-    if (imovelIndex > -1) {
-      // Remove dos favoritos
-      novosFavoritos = favoritosAtuais.filter(fav => String(fav.id) !== String(data.id));
-      setFavorito(false);
-    } else {
-      // Adiciona aos favoritos
-      const imovelParaAdicionar = {
-        id: data.id,
-        nome: data.nome,
-        area: data.area,
-        quartos: data.quartos,
-        banheiros: data.banheiros,
-        vagas: data.vagas,
-        preco: data.preco,
-        imagem: data.imagem
-      };
-
-      novosFavoritos = [...favoritosAtuais, imovelParaAdicionar];
-      setFavorito(true);
+      await AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(favoritos));
+    } catch (error) {
+      console.error('Erro ao atualizar favorito:', error);
     }
-
-    await AsyncStorage.setItem('favoritos', JSON.stringify(novosFavoritos));
   };
 
   // Formatar preço
@@ -84,11 +88,14 @@ export default function Imovel({ data }) {
           <Text style={styles.name} numberOfLines={1}>
             {data?.nome || "Nome do Imóvel"}
           </Text>
-          <TouchableOpacity onPress={handleToggleFavorite}>
+          <TouchableOpacity 
+            onPress={handleToggleFavorite}
+            style={styles.favoritoButton}
+          >
             <Ionicons
               name={favorito ? "heart" : "heart-outline"}
               size={24}
-              color={favorito ? "#DE302A" : "#fff"}
+              color={favorito ? "#FF4444" : "#fff"}
             />
           </TouchableOpacity>
         </View>
@@ -166,6 +173,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     flex: 1,
     marginRight: 10,
+  },
+  favoritoButton: {
+    padding: 4,
   },
   info: {
     flexDirection: "row",
