@@ -2,9 +2,15 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, Modal } from "react-na
 import { router } from "expo-router";
 import { useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import ModalMensagem from "./ModalMensagem";
 
 export default function VisitaImovel({ visita, onCancel }) {
     const [modalVisible, setModalVisible] = useState(false);
+    const [modalMsg, setModalMsg] = useState({ visible: false, title: '', message: '' });
+
+    const showAlert = (title, message) => {
+        setModalMsg({ visible: true, title, message });
+    };
 
     const blurActiveElement = () => {
         if (typeof document !== "undefined" && document.activeElement) {
@@ -70,16 +76,22 @@ export default function VisitaImovel({ visita, onCancel }) {
                 return;
             }
 
-            alert("Erro ao cancelar visita");
+            showAlert("Erro", "Erro ao cancelar visita");
         } catch (error) {
             console.log(error);
-            alert("Erro interno");
+            showAlert("Erro", "Ocorreu um erro interno. Tente novamente.");
         }
     };
 
     return (
         <View style={styles.card}>
 
+            <ModalMensagem
+                visible={modalMsg.visible}
+                title={modalMsg.title}
+                message={modalMsg.message}
+                onConfirm={() => setModalMsg({ visible: false, title: '', message: '' })}
+            />
             {/* FOTO */}
             {imovel.foto ? (
                 <Image source={{ uri: imovel.foto }} style={styles.foto} />

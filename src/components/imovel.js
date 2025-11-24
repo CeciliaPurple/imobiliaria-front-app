@@ -1,4 +1,3 @@
-// imovel.js - CARD DE LISTAGEM (componente)
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Image } from "expo-image";
@@ -6,7 +5,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { toggleFavorito } from '../utils/favoritos'; // função centralizada
+
+const FAVORITOS_KEY = "favoritos"; // Chave única para todos os componentes
 
 export default function Imovel({ data, onFavoritoChange }) {
   const [favorito, setFavorito] = useState(false);
@@ -15,7 +15,7 @@ export default function Imovel({ data, onFavoritoChange }) {
   useEffect(() => {
     const checkFavorito = async () => {
       try {
-        const favoritosJSON = await AsyncStorage.getItem("@favoritos_imoveis");
+        const favoritosJSON = await AsyncStorage.getItem(FAVORITOS_KEY);
         const favoritos = favoritosJSON ? JSON.parse(favoritosJSON) : [];
         setFavorito(favoritos.some(f => f.id === data?.id));
       } catch (error) {
@@ -30,15 +30,30 @@ export default function Imovel({ data, onFavoritoChange }) {
   const handleToggleFavorite = async () => {
     if (!data?.id) return;
 
-    await toggleFavorito(data, async () => {
-      // Atualiza o estado local
-      const favoritosJSON = await AsyncStorage.getItem("@favoritos_imoveis");
-      const favoritos = favoritosJSON ? JSON.parse(favoritosJSON) : [];
-      setFavorito(favoritos.some(f => f.id === data?.id));
+    try {
+      const favoritosJSON = await AsyncStorage.getItem(FAVORITOS_KEY);
+      let favoritos = favoritosJSON ? JSON.parse(favoritosJSON) : [];
 
-      // Notifica parent para atualizar lista de favoritos, se existir
+      const index = favoritos.findIndex(f => f.id === data.id);
+
+      if (index !== -1) {
+        // Remove dos favoritos
+        favoritos.splice(index, 1);
+        setFavorito(false);
+      } else {
+        // Adiciona aos favoritos
+        favoritos.push(data);
+        setFavorito(true);
+      }
+
+      // Salva no AsyncStorage
+      await AsyncStorage.setItem(FAVORITOS_KEY, JSON.stringify(favoritos));
+
+      // Notifica o componente pai
       if (onFavoritoChange) onFavoritoChange();
-    });
+    } catch (error) {
+      console.error('Erro ao alternar favorito:', error);
+    }
   };
 
   // Formatar preço

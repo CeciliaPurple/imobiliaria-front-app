@@ -1,8 +1,9 @@
-import { Text, StyleSheet, ImageBackground, View, TouchableOpacity, Alert, TextInput, ActivityIndicator, Modal } from "react-native"
+import { Text, StyleSheet, ImageBackground, View, TouchableOpacity, TextInput, ActivityIndicator, Modal } from "react-native"
 import { Image } from "expo-image"
 import { router, useFocusEffect } from "expo-router"
 import React, { useState, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ModalMensagem from "../../components/ModalMensagem";
 
 export default function Perfil() {
     const [isEditing, setIsEditing] = useState(false);
@@ -12,6 +13,7 @@ export default function Perfil() {
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [showSaveModal, setShowSaveModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [modalMsg, setModalMsg] = useState({ visible: false, title: '', message: '' });
     const [editedData, setEditedData] = useState({
         nome: '',
         email: '',
@@ -24,6 +26,10 @@ export default function Perfil() {
             loadUserData();
         }, [])
     );
+
+    const showAlert = (title, message) => {
+        setModalMsg({ visible: true, title, message });
+    };
 
     const loadUserData = async () => {
         try {
@@ -56,7 +62,7 @@ export default function Perfil() {
 
         } catch (error) {
             console.error('❌ Erro ao carregar dados:', error);
-           console.log('Erro', 'Não foi possível carregar os dados do usuário');
+           showAlert('Erro', 'Não foi possível carregar os dados do usuário');
         } finally {
             setLoading(false);
         }
@@ -66,14 +72,14 @@ export default function Perfil() {
         if (isEditing) {
             // Validação dos campos
             if (!editedData.nome || !editedData.email) {
-               console.log('Erro', 'Por favor, preencha nome e email');
+               showAlert('Erro', 'Por favor, preencha nome e email');
                 return;
             }
 
             // Validação de email
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(editedData.email)) {
-                console.log('Erro', 'Por favor, insira um email válido');
+                showAlert('Erro', 'Por favor, insira um email válido');
                 return;
             }
 
@@ -139,12 +145,12 @@ export default function Perfil() {
                 await AsyncStorage.setItem('userData', JSON.stringify(updatedUser));
                 
                 setIsEditing(false);
-                Alert.alert('Sucesso', 'Dados atualizados com sucesso!');
+                showAlert('Sucesso', 'Dados atualizados com sucesso!');
             } else {
                 if (response.status === 409) {
-                    console.log('Erro', 'Este email já está sendo usado por outro usuário');
+                    showAlert('Erro', 'Este email já está sendo usado por outro usuário');
                 } else {
-                    console.log('Erro', data.message || 'Não foi possível atualizar os dados');
+                    showAlert('Erro', data.message || 'Não foi possível atualizar os dados');
                 }
             }
 
@@ -224,6 +230,12 @@ export default function Perfil() {
 
     return (
         <ImageBackground style={styles.container} source={require('../../../assets/img/gradient2.png')} resizeMode="stretch">
+            <ModalMensagem
+                visible={modalMsg.visible}
+                title={modalMsg.title}
+                message={modalMsg.message}
+                onConfirm={() => setModalMsg({ visible: false, title: '', message: '' })}
+            />
             <View style={styles.header}>
                 <Image style={styles.logo} source={require('../../../assets/img/villa-logo-img.png')} />
             </View>

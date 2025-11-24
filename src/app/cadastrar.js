@@ -1,8 +1,9 @@
-import { Text, StyleSheet, ImageBackground, View, TextInput, TouchableOpacity, Alert } from "react-native"
+import { Text, StyleSheet, ImageBackground, View, TextInput, TouchableOpacity } from "react-native"
 import { Image } from "expo-image"
 import { Link, router } from "expo-router"
 import React from 'react';
 import Checkbox from 'expo-checkbox';
+import ModalMensagem from "../components/ModalMensagem";
 
 
 export default function Cadastrar() {
@@ -11,12 +12,19 @@ export default function Cadastrar() {
     const [senha, setSenha] = React.useState('');
     const [isChecked, setIsChecked] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
+    const [modal, setModal] = React.useState({ visible: false, title: '', message: '' });
+
+    const showAlert = (title, message) => {
+        setModal({ visible: true, title, message });
+    };
 
     const handleCadastro = async () => {
         if (!name || !email || !senha) {
+            showAlert('Erro', 'Por favor, preencha todos os campos.');
             return;
         }
         if (!isChecked) {
+            showAlert('Termos de Uso', 'Você precisa aceitar os termos de uso para continuar.');
             return;
         }
 
@@ -47,12 +55,19 @@ export default function Cadastrar() {
             if (!response.ok) {
                
                 const errorMessage = data.error || data.menssage || data.message || 'Erro ao cadastrar usuário';
+                showAlert('Erro no Cadastro', errorMessage);
                 throw new Error(errorMessage);
             }
 
-           
-            router.push('/login');
+            showAlert('Sucesso!', 'Cadastro realizado com sucesso. Você será redirecionado para o login.', () => {
+                setModal({ visible: false });
+                router.push('/login');
+            });
         } catch (error) {
+            // O erro já é tratado acima, mas caso haja um erro de rede, ele cairá aqui.
+            if (!modal.visible) {
+                showAlert('Erro', 'Não foi possível conectar ao servidor. Tente novamente.');
+            }
         } finally {
             setLoading(false);
         }
@@ -60,6 +75,12 @@ export default function Cadastrar() {
 
     return (
         <ImageBackground style={styles.container} source={require('../../assets/img/gradient2.png')} resizeMode="stretch">
+            <ModalMensagem
+                visible={modal.visible}
+                title={modal.title}
+                message={modal.message}
+                onConfirm={modal.onConfirm || (() => setModal({ visible: false }))}
+            />
             <Link style={styles.link} href={'/home'}>
                 <Image style={styles.logo} source={require('../../assets/img/villa-logo-img.png')} />
             </Link>

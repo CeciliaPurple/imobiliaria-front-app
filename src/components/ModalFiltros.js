@@ -83,12 +83,12 @@ export default function ModalFiltros({ visible, onClose, onApply, filtrosIniciai
     };
 
     const handleApplyPress = () => {
-        console.log('📋 Filtros a serem aplicados:', filtros);
+        
         onApply(filtros);
     };
 
     const handleClearAndClose = () => {
-        console.log('🗑️ Limpando filtros do modal');
+        
         const filtrosVazios = {
             localizacao: '',
             tipos: [],

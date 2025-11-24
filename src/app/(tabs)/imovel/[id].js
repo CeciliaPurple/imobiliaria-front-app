@@ -6,7 +6,7 @@ import { Link, useLocalSearchParams } from "expo-router";
 import { useState, useEffect } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const FAVORITES_KEY = '@favoritos_imoveis';
+const FAVORITES_KEY = 'favoritos'; // Mesma chave usada em todos os componentes
 
 export default function Imovel() {
     const { id } = useLocalSearchParams();
@@ -17,12 +17,9 @@ export default function Imovel() {
     const [favorito, setFavorito] = useState(false);
     const [loadingFavorito, setLoadingFavorito] = useState(false);
 
-    // Carregar imóvel da API
     useEffect(() => {
         const buscarImovel = async () => {
             try {
-              
-                
                 const response = await fetch(`http://localhost:3100/imoveis/${id}`);
                 
                 if (!response.ok) {
@@ -52,10 +49,19 @@ export default function Imovel() {
             try {
                 const favoritosJSON = await AsyncStorage.getItem(FAVORITES_KEY);
                 const favoritos = favoritosJSON ? JSON.parse(favoritosJSON) : [];
-                // IMPORTANTE: Converte para string para comparação correta
-                const idString = String(id);
-                const isFavorito = favoritos.includes(idString);
+                
+                // Verifica se o ID do imóvel está na lista (comparando o ID)
+                const isFavorito = favoritos.some(fav => {
+                    // Se for um objeto, compara o ID
+                    if (typeof fav === 'object' && fav.id) {
+                        return String(fav.id) === String(id);
+                    }
+                    // Se for apenas o ID (string/number)
+                    return String(fav) === String(id);
+                });
+                
                 setFavorito(isFavorito);
+                console.log('💖 Favorito?', isFavorito);
             } catch (error) {
                 console.error('Erro ao verificar favoritos:', error);
             }
@@ -68,35 +74,52 @@ export default function Imovel() {
 
     // Toggle favorito
     const toggleFavorito = async () => {
+        if (!imovel) return;
+
         try {
             setLoadingFavorito(true);
             
             const favoritosJSON = await AsyncStorage.getItem(FAVORITES_KEY);
             let favoritos = favoritosJSON ? JSON.parse(favoritosJSON) : [];
-            // IMPORTANTE: Converte para string
-            const idString = String(id);
 
             if (favorito) {
-                // Remover dos favoritos - compara como string
-                favoritos = favoritos.filter(favId => String(favId) !== idString);
+                // Remover dos favoritos
+                favoritos = favoritos.filter(fav => {
+                    if (typeof fav === 'object' && fav.id) {
+                        return String(fav.id) !== String(id);
+                    }
+                    return String(fav) !== String(id);
+                });
+                
                 await AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(favoritos));
                 setFavorito(false);
                 
+              
                 
-                // Feedback visual
                 Alert.alert(
                     'Removido dos Favoritos',
                     'Este imóvel foi removido da sua lista de favoritos.',
                     [{ text: 'OK' }]
                 );
             } else {
-                // Adicionar aos favoritos - salva como string
-                favoritos.push(idString);
+                // Adicionar aos favoritos - salva o objeto completo
+                const imovelFavorito = {
+                    id: imovel.id,
+                    nome: imovel.titulo,
+                    preco: imovel.valor,
+                    imagem: imovel.foto,
+                    area: imovel.metrosQuadrados,
+                    quartos: imovel.quartos,
+                    banheiros: imovel.banheiros,
+                    vagas: imovel.garagens
+                };
+                
+                favoritos.push(imovelFavorito);
                 await AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(favoritos));
                 setFavorito(true);
                 
                 
-                // Feedback visual
+                
                 Alert.alert(
                     'Adicionado aos Favoritos',
                     'Este imóvel foi adicionado à sua lista de favoritos!',

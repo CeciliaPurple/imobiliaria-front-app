@@ -1,19 +1,25 @@
-import { Text, StyleSheet, ImageBackground, View, TextInput, TouchableOpacity, Alert, ActivityIndicator } from "react-native"
+import { Text, StyleSheet, ImageBackground, View, TextInput, TouchableOpacity, ActivityIndicator } from "react-native"
 import { Image } from "expo-image"
 import { Link, useRouter } from "expo-router"
 import React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ModalMensagem from "../components/ModalMensagem";
 
 export default function Login() {
     const [email, setEmail] = React.useState('');
     const [senha, setSenha] = React.useState('');
     const [loading, setLoading] = React.useState(false);
     const router = useRouter();
+    const [modal, setModal] = React.useState({ visible: false, title: '', message: '' });
+
+    const showAlert = (title, message) => {
+        setModal({ visible: true, title, message });
+    };
 
     const handleLogin = async () => {
         // Validações básicas
         if (!email.trim() || !senha.trim()) {
-            Alert.alert('Erro', 'Por favor, preencha todos os campos');
+            showAlert('Erro', 'Por favor, preencha todos os campos');
             return;
         }
 
@@ -65,7 +71,7 @@ export default function Login() {
                     
                     if (!verificacao) {
                         console.error('❌ ERRO: Dados não foram salvos!');
-                        Alert.alert('Erro', 'Não foi possível salvar os dados');
+                        showAlert('Erro', 'Não foi possível salvar os dados');
                         return;
                     }
                     
@@ -76,7 +82,7 @@ export default function Login() {
                     
                 } catch (storageError) {
                     console.error('❌ Erro ao salvar no AsyncStorage:', storageError);
-                    Alert.alert('Erro', 'Não foi possível salvar os dados: ' + storageError.message);
+                    showAlert('Erro', 'Não foi possível salvar os dados: ' + storageError.message);
                     return;
                 }
                 
@@ -92,18 +98,18 @@ export default function Login() {
                 console.log('❌ Erro na resposta:', data);
                 
                 if (response.status === 401) {
-                    Alert.alert('Erro', 'Email ou senha incorretos');
+                    showAlert('Erro', 'Email ou senha incorretos');
                 } else if (response.status === 404) {
-                    Alert.alert('Erro', 'Usuário não encontrado');
+                    showAlert('Erro', 'Usuário não encontrado');
                 } else {
-                    Alert.alert('Erro', data.message || 'Erro ao fazer login');
+                    showAlert('Erro', data.message || 'Erro ao fazer login');
                 }
             }
 
         } catch (error) {
             console.error('❌ Erro geral:', error);
-            Alert.alert(
-                'Erro de Conexão', 
+            showAlert(
+                'Erro de Conexão',
                 'Não foi possível conectar ao servidor. Verifique sua conexão.\n\n' + error.message
             );
         } finally {
@@ -119,6 +125,12 @@ export default function Login() {
             source={require('../../assets/img/gradient2.png')} 
             resizeMode="stretch"
         >
+            <ModalMensagem
+                visible={modal.visible}
+                title={modal.title}
+                message={modal.message}
+                onConfirm={() => setModal({ visible: false, title: '', message: '' })}
+            />
             <Link style={styles.link} href={'/home'}>
                 <Image 
                     style={styles.logo} 
