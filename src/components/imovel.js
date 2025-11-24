@@ -6,63 +6,44 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { toggleFavorito } from '../utils/favoritos'; // função centralizada
 
-
-const FAVORITES_KEY = '@favoritos_imoveis';
-
-export default function Imovel({ data }) {
+export default function Imovel({ data, onFavoritoChange }) {
   const [favorito, setFavorito] = useState(false);
 
   // Verifica se está nos favoritos ao carregar
   useEffect(() => {
     const checkFavorito = async () => {
       try {
-        const favoritosJSON = await AsyncStorage.getItem(FAVORITES_KEY);
+        const favoritosJSON = await AsyncStorage.getItem("@favoritos_imoveis");
         const favoritos = favoritosJSON ? JSON.parse(favoritosJSON) : [];
-        // Converte o ID para string para comparação
-        const idString = String(data?.id);
-        const isFavorito = favoritos.includes(idString);
-        setFavorito(isFavorito);
+        setFavorito(favoritos.some(f => f.id === data?.id));
       } catch (error) {
         console.error('Erro ao verificar favorito:', error);
       }
     };
 
-    if (data?.id) {
-      checkFavorito();
-    }
+    if (data?.id) checkFavorito();
   }, [data?.id]);
 
+  // Toggle favorito
   const handleToggleFavorite = async () => {
     if (!data?.id) return;
 
-    try {
-      const favoritosJSON = await AsyncStorage.getItem(FAVORITES_KEY);
-      let favoritos = favoritosJSON ? JSON.parse(favoritosJSON) : [];
-      const imovelId = String(data.id);
+    await toggleFavorito(data, async () => {
+      // Atualiza o estado local
+      const favoritosJSON = await AsyncStorage.getItem("@favoritos_imoveis");
+      const favoritos = favoritosJSON ? JSON.parse(favoritosJSON) : [];
+      setFavorito(favoritos.some(f => f.id === data?.id));
 
-      if (favorito) {
-        // Remove dos favoritos
-        favoritos = favoritos.filter(id => id !== imovelId);
-        setFavorito(false);
-      } else {
-        // Adiciona aos favoritos
-        favoritos.push(imovelId);
-        setFavorito(true);
-      }
-
-      await AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(favoritos));
-    } catch (error) {
-      console.error('Erro ao atualizar favorito:', error);
-    }
+      // Notifica parent para atualizar lista de favoritos, se existir
+      if (onFavoritoChange) onFavoritoChange();
+    });
   };
 
   // Formatar preço
   const precoFormatado = data?.preco
-    ? new Intl.NumberFormat('pt-BR', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }).format(data.preco)
+    ? new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(data.preco)
     : "00.000,00";
 
   return (
@@ -74,7 +55,6 @@ export default function Imovel({ data }) {
           source={typeof data?.imagem === 'string' ? { uri: data.imagem } : data?.imagem || require("../../assets/img/luxo.jpg")}
         />
 
-        {/* Gradiente escuro embaixo */}
         <LinearGradient
           colors={["transparent", "rgba(0,0,0,0.7)"]}
           style={styles.gradientOverlay}
@@ -85,10 +65,7 @@ export default function Imovel({ data }) {
           <Text style={styles.name} numberOfLines={1}>
             {data?.nome || "Nome do Imóvel"}
           </Text>
-          <TouchableOpacity 
-            onPress={handleToggleFavorite}
-            style={styles.favoritoButton}
-          >
+          <TouchableOpacity onPress={handleToggleFavorite} style={styles.favoritoButton}>
             <Ionicons
               name={favorito ? "heart" : "heart-outline"}
               size={24}

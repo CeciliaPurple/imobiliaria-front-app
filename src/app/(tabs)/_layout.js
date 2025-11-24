@@ -55,23 +55,5 @@ export default function RootLayout() {
                     tabBarIcon: ({color, focused}) => <FontAwesome name="user" size={focused ? 28 : 24} color={color} />,
                 }}
             />
-            <Tabs.Screen 
-                name="imovel"
-                options={{
-                    href: null
-                }}
-            />
-            <Tabs.Screen 
-                name="agenda"
-                options={{
-                    href: null
-                }}
-            />
-            <Tabs.Screen 
-                name="editarVisita"
-                options={{
-                    href: null
-                }}
-            />
         </Tabs>
     )}
