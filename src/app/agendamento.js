@@ -94,7 +94,6 @@ export default function Agenda() {
 
             const result = await response.json();
             
-            console.log('📊 Dados recebidos da API:', result);
 
             // A API retorna um objeto com 'agendamentos' dentro
             const data = result.agendamentos || result;

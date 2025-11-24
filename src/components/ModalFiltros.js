@@ -3,7 +3,7 @@ import { Modal, View, Text, StyleSheet, TextInput, ScrollView, Pressable } from 
 import Ionicons from '@expo/vector-icons/Ionicons';
 import BotaoSelecao from './BotaoSelecao';
 
-// DADOS PARA OS FILTROS - MESMOS DO WEB
+// DADOS PARA OS FILTROS
 const TIPOS_IMOVEIS = ['Casa', 'Apartamento', 'Cobertura', 'Loft', 'Sítio', 'Flat'];
 const AMBIENTES = [
     'Área de Serviços',
@@ -20,7 +20,7 @@ const CONVENIENCIAS = [
     'Academia',
     'Ar-condicionado', 
     'Armários Planejados', 
-    'Hidromassagem', 
+    'Hidromassagem',
     'Mobiliado',
     'Segurança 24h'
 ];
@@ -42,7 +42,6 @@ export default function ModalFiltros({ visible, onClose, onApply, filtrosIniciai
         }));
     };
 
-    // Para tipos (seleção única transformada em array)
     const handleSingleSelect = (campo, valor) => {
         const listaAtual = filtros[campo];
         const novaLista = listaAtual.includes(valor)
@@ -51,7 +50,6 @@ export default function ModalFiltros({ visible, onClose, onApply, filtrosIniciai
         handleInputChange(campo, novaLista);
     };
 
-    // Para múltipla seleção (ambientes, conveniências)
     const handleMultipleSelect = (campo, valor) => {
         const listaAtual = filtros[campo];
         const novaLista = listaAtual.includes(valor)
@@ -61,7 +59,6 @@ export default function ModalFiltros({ visible, onClose, onApply, filtrosIniciai
         handleInputChange(campo, novaLista);
     };
 
-    // Para quartos, banheiros, vagas (checkboxes com números)
     const handleNumberCheckbox = (campo, numero) => {
         const listaAtual = filtros[campo];
         const novaLista = listaAtual.includes(numero)
@@ -83,12 +80,10 @@ export default function ModalFiltros({ visible, onClose, onApply, filtrosIniciai
     };
 
     const handleApplyPress = () => {
-        
         onApply(filtros);
     };
 
     const handleClearAndClose = () => {
-        
         const filtrosVazios = {
             localizacao: '',
             tipos: [],
@@ -103,7 +98,6 @@ export default function ModalFiltros({ visible, onClose, onApply, filtrosIniciai
         onApply(filtrosVazios);
     };
 
-    // Componente para checkboxes de números (quartos, banheiros, vagas)
     const NumberCheckboxGroup = ({ label, campo, opcoes = [1, 2, 3, 4, 5] }) => (
         <View style={modalStyles.numberContainer}>
             <Text style={modalStyles.sectionTitle}>{label}</Text>
@@ -116,6 +110,10 @@ export default function ModalFiltros({ visible, onClose, onApply, filtrosIniciai
                             filtros[campo].includes(num) && modalStyles.numberButtonSelected
                         ]}
                         onPress={() => handleNumberCheckbox(campo, num)}
+                        accessible={true}
+                        accessibilityRole="checkbox"
+                        accessibilityState={{ checked: filtros[campo].includes(num) }}
+                        accessibilityLabel={`${num === 5 ? 'Mais de 5' : num} ${label.toLowerCase()}`}
                     >
                         <Text style={[
                             modalStyles.numberButtonText,
@@ -134,21 +132,41 @@ export default function ModalFiltros({ visible, onClose, onApply, filtrosIniciai
             animationType="slide"
             transparent={true}    
             visible={visible}     
-            onRequestClose={onClose} 
+            onRequestClose={onClose}
+            accessibilityViewIsModal={true}
+            statusBarTranslucent={false}
         >
-            <View style={modalStyles.centeredView}>
-                <View style={modalStyles.modalView}>
+            {/* Removido aria-hidden da overlay para corrigir warning de acessibilidade */}
+            <Pressable 
+                style={modalStyles.centeredView}
+                onPress={onClose}
+                accessible={false}
+            >
+                <Pressable 
+                    style={modalStyles.modalView}
+                    onPress={(e) => e.stopPropagation()}
+                >
                     
                     {/* CABEÇALHO */}
                     <View style={modalStyles.header}>
                         <Ionicons name="filter" size={18} color="#146fba" />
                         <Text style={modalStyles.modalTitle}>Filtros</Text>
-                        <Pressable onPress={onClose} style={modalStyles.closeButton}>
+                        <Pressable 
+                            onPress={onClose} 
+                            style={modalStyles.closeButton}
+                            accessible={true}
+                            accessibilityRole="button"
+                            accessibilityLabel="Fechar filtros"
+                        >
                             <Text style={{ fontSize: 24, color: '#146fba' }}>×</Text>
                         </Pressable>
                     </View>
 
-                    <ScrollView style={modalStyles.scrollViewContent} showsVerticalScrollIndicator={false}>
+                    <ScrollView 
+                        style={modalStyles.scrollViewContent} 
+                        showsVerticalScrollIndicator={false}
+                        keyboardShouldPersistTaps="handled"
+                    >
                         
                         {/* LOCALIZAÇÃO */}
                         <Text style={modalStyles.sectionTitle}>Localização</Text>
@@ -157,6 +175,8 @@ export default function ModalFiltros({ visible, onClose, onApply, filtrosIniciai
                             placeholder="Digite bairro, cidade..."
                             value={filtros.localizacao}
                             onChangeText={(text) => handleInputChange('localizacao', text)}
+                            accessible={true}
+                            accessibilityLabel="Campo de localização"
                         />
 
                         {/* TIPOS DE IMÓVEIS */}
@@ -185,6 +205,8 @@ export default function ModalFiltros({ visible, onClose, onApply, filtrosIniciai
                                         placeholder="0"
                                         value={filtros.precoMin ? formatarPreco(filtros.precoMin) : ''}
                                         onChangeText={(text) => handlePrecoChange('precoMin', text)}
+                                        accessible={true}
+                                        accessibilityLabel="Preço mínimo"
                                     />
                                 </View>
                             </View>
@@ -198,6 +220,8 @@ export default function ModalFiltros({ visible, onClose, onApply, filtrosIniciai
                                         placeholder="0"
                                         value={filtros.precoMax ? formatarPreco(filtros.precoMax) : ''}
                                         onChangeText={(text) => handlePrecoChange('precoMax', text)}
+                                        accessible={true}
+                                        accessibilityLabel="Preço máximo"
                                     />
                                 </View>
                             </View>
@@ -246,6 +270,9 @@ export default function ModalFiltros({ visible, onClose, onApply, filtrosIniciai
                         <Pressable 
                             style={[modalStyles.actionButton, modalStyles.clearButton]}
                             onPress={handleClearAndClose}
+                            accessible={true}
+                            accessibilityRole="button"
+                            accessibilityLabel="Limpar todos os filtros"
                         >
                             <Ionicons name="trash-outline" size={18} color="#333" />
                             <Text style={modalStyles.clearButtonText}>Limpar</Text>
@@ -253,14 +280,17 @@ export default function ModalFiltros({ visible, onClose, onApply, filtrosIniciai
                         <Pressable 
                             style={[modalStyles.actionButton, modalStyles.applyButton]}
                             onPress={handleApplyPress}
+                            accessible={true}
+                            accessibilityRole="button"
+                            accessibilityLabel="Aplicar filtros selecionados"
                         >
                             <Ionicons name="checkmark-circle" size={18} color="#fff" />
                             <Text style={modalStyles.applyButtonText}>Aplicar</Text>
                         </Pressable>
                     </View>
 
-                </View>
-            </View>
+                </Pressable>
+            </Pressable>
         </Modal>
     );
 }
@@ -279,11 +309,6 @@ const modalStyles = StyleSheet.create({
         height: '100%', 
         margin: 0,
         borderRadius: 0, 
-        shadowColor: '#000',
-        shadowOffset: { width: 2, height: 0 }, 
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5,
     },
     
     header: {
@@ -367,7 +392,6 @@ const modalStyles = StyleSheet.create({
         padding: 0,
     },
 
-    // Estilos para checkboxes de números
     numberContainer: {
         marginBottom: 15,
     },
@@ -412,7 +436,6 @@ const modalStyles = StyleSheet.create({
         flex: 1,
         borderRadius: 8,
         padding: 12,
-        elevation: 2,
         alignItems: 'center',
         flexDirection: 'row',
         justifyContent: 'center',

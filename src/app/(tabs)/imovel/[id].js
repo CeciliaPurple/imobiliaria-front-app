@@ -1,10 +1,11 @@
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, ActivityIndicator, Alert } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, ActivityIndicator } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import EvilIcons from '@expo/vector-icons/EvilIcons';
 import { Link, useLocalSearchParams } from "expo-router";
 import { useState, useEffect } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ModalMensagem from "../../../components/ModalMensagem";
 
 const FAVORITES_KEY = 'favoritos'; // Mesma chave usada em todos os componentes
 
@@ -16,7 +17,9 @@ export default function Imovel() {
     const [imovel, setImovel] = useState(null);
     const [favorito, setFavorito] = useState(false);
     const [loadingFavorito, setLoadingFavorito] = useState(false);
+    const [modal, setModal] = useState({ visible: false, title: '', message: '' });
 
+    // Carregar imóvel da API
     useEffect(() => {
         const buscarImovel = async () => {
             try {
@@ -27,7 +30,7 @@ export default function Imovel() {
                 }
                 
                 const data = await response.json();
-               
+                
                 
                 setImovel(data.imovel || data);
                 setLoading(false);
@@ -94,13 +97,13 @@ export default function Imovel() {
                 await AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(favoritos));
                 setFavorito(false);
                 
-              
                 
-                Alert.alert(
-                    'Removido dos Favoritos',
-                    'Este imóvel foi removido da sua lista de favoritos.',
-                    [{ text: 'OK' }]
-                );
+                
+                setModal({
+                    visible: true,
+                    title: 'Removido dos Favoritos',
+                    message: 'Este imóvel foi removido da sua lista de favoritos.'
+                });
             } else {
                 // Adicionar aos favoritos - salva o objeto completo
                 const imovelFavorito = {
@@ -120,15 +123,19 @@ export default function Imovel() {
                 
                 
                 
-                Alert.alert(
-                    'Adicionado aos Favoritos',
-                    'Este imóvel foi adicionado à sua lista de favoritos!',
-                    [{ text: 'OK' }]
-                );
+                setModal({
+                    visible: true,
+                    title: 'Adicionado aos Favoritos',
+                    message: 'Este imóvel foi adicionado à sua lista de favoritos!'
+                });
             }
         } catch (error) {
             console.error('Erro ao atualizar favoritos:', error);
-            Alert.alert('Erro', 'Não foi possível atualizar os favoritos.');
+            setModal({
+                visible: true,
+                title: 'Erro',
+                message: 'Não foi possível atualizar os favoritos.'
+            });
         } finally {
             setLoadingFavorito(false);
         }
@@ -177,6 +184,13 @@ export default function Imovel() {
 
     return (
         <View style={styles.container}>
+            <ModalMensagem
+                visible={modal.visible}
+                title={modal.title}
+                message={modal.message}
+                onConfirm={() => setModal({ visible: false, title: '', message: '' })}
+            />
+            
             <ScrollView>
                 {/* Imagem do imóvel */}
                 <View style={styles.imageContainer}>
