@@ -211,7 +211,7 @@ export default function Filtro() {
 
     return (
         <View style={styles.container}>
-            <Topo />
+            
             
             <ModalFiltros 
                 visible={modalVisible} 
@@ -221,6 +221,7 @@ export default function Filtro() {
             />
 
             <ScrollView 
+            
                 style={styles.container_scroll}
                 refreshControl={
                     <RefreshControl
@@ -230,6 +231,7 @@ export default function Filtro() {
                     />
                 }
             >
+                <Topo />
                 <View style={styles.container_filter}>
                     <TouchableOpacity 
                         style={styles.btn_filter} 

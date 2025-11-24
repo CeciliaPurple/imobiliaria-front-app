@@ -77,9 +77,11 @@ export default function Imovel({ data, onFavoritoChange }) {
 
         {/* Nome + coração */}
         <View style={styles.overlay}>
-          <Text style={styles.name} numberOfLines={1}>
-            {data?.nome || "Nome do Imóvel"}
-          </Text>
+          <Link href={`/imovel/${data?.id}`} asChild>
+            <TouchableOpacity style={styles.nameLink}>
+              <Text style={styles.name} numberOfLines={1}>{data?.nome || "Nome do Imóvel"}</Text>
+            </TouchableOpacity>
+          </Link>
           <TouchableOpacity onPress={handleToggleFavorite} style={styles.favoritoButton}>
             <Ionicons
               name={favorito ? "heart" : "heart-outline"}
@@ -113,7 +115,7 @@ export default function Imovel({ data, onFavoritoChange }) {
       {/* Preço + botão */}
       <View style={styles.footer}>
         <Text style={styles.price}>R$ {precoFormatado}</Text>
-        <Link href={`/(tabs)/imovel/${data?.id}`} asChild>
+        <Link href={`/imovel/${data?.id}`} asChild>
           <TouchableOpacity style={styles.button}>
             <Text style={styles.buttonText}>Ver mais</Text>
           </TouchableOpacity>
@@ -160,11 +162,13 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
-    flex: 1,
-    marginRight: 10,
   },
   favoritoButton: {
     padding: 4,
+  },
+  nameLink: {
+    flex: 1,
+    marginRight: 10,
   },
   info: {
     flexDirection: "row",

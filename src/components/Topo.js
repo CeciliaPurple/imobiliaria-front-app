@@ -22,10 +22,9 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     paddingHorizontal: 20,
-    paddingTop: 30,
-    paddingVertical: 20,
+    paddingVertical: 10,
     backgroundColor: '#fff',
     elevation: 4,
     shadowColor: '#000',

@@ -64,7 +64,7 @@ export default function Home() {
 
     return (
         <View style={styles.container}>
-            <Topo />
+          
             
             {loading && !refreshing ? (
                 <View style={styles.loadingContainer}>
@@ -88,6 +88,7 @@ export default function Home() {
                         />
                     }
                 >
+                      <Topo />
                     <ImageBackground
                         source={require("../../../assets/img/banner.png")}
                         style={styles.banner}

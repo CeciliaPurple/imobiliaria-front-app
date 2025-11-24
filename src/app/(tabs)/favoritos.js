@@ -52,8 +52,8 @@ export default function Favoritos() {
 
   return (
     <View style={styles.container}>
-      <Topo />
       <ScrollView>
+        <Topo />
         <Text style={styles.title}>Favoritos</Text>
 
         {favoritos.length === 0 ? (

@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, Platform } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { useState, useEffect } from "react";
+import Topo from "../components/Topo";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ModalMensagem from "../components/ModalMensagem";
@@ -236,6 +237,8 @@ export default function Agenda() {
 
     return (
         <ScrollView style={styles.container}>
+            <Topo />
+
             <ModalMensagem
                 visible={modal.visible}
                 title={modal.title}
@@ -448,13 +451,14 @@ const styles = StyleSheet.create({
         fontSize: 16
     },
     webInput: {
-        width: "100%",
         padding: 12,
         borderWidth: 2,
         borderColor: "#84C4FB",
         borderRadius: 6,
         fontSize: 16,
-        backgroundColor: "#FFF"
+        backgroundColor: "#FFF",
+        color: "#375A76",
+        fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif', // Garante a mesma família de fonte
     },
     textArea: {
         height: 100,

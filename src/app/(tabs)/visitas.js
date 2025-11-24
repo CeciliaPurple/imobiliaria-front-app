@@ -73,9 +73,8 @@ export default function Visitas() {
 
     return (
         <View style={styles.container}>
-            <Topo />
-
             <ScrollView showsVerticalScrollIndicator={false}>
+                 <Topo />
                 <Text style={styles.title}>Minhas Visitas</Text>
 
                 <View style={styles.container_visita}>

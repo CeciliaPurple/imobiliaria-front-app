@@ -5,13 +5,14 @@ import EvilIcons from '@expo/vector-icons/EvilIcons';
 import { Link, useLocalSearchParams } from "expo-router";
 import { useState, useEffect } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import ModalMensagem from "../../../components/ModalMensagem";
+import ModalMensagem from "../../components/ModalMensagem";
+import Topo from "../../components/Topo";
 
 const FAVORITES_KEY = 'favoritos'; // Mesma chave usada em todos os componentes
 
 export default function Imovel() {
     const { id } = useLocalSearchParams();
-    
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [imovel, setImovel] = useState(null);
@@ -24,14 +25,14 @@ export default function Imovel() {
         const buscarImovel = async () => {
             try {
                 const response = await fetch(`http://localhost:3100/imoveis/${id}`);
-                
+
                 if (!response.ok) {
                     throw new Error('Imóvel não encontrado');
                 }
-                
+
                 const data = await response.json();
-                
-                
+
+
                 setImovel(data.imovel || data);
                 setLoading(false);
             } catch (error) {
@@ -52,7 +53,7 @@ export default function Imovel() {
             try {
                 const favoritosJSON = await AsyncStorage.getItem(FAVORITES_KEY);
                 const favoritos = favoritosJSON ? JSON.parse(favoritosJSON) : [];
-                
+
                 // Verifica se o ID do imóvel está na lista (comparando o ID)
                 const isFavorito = favoritos.some(fav => {
                     // Se for um objeto, compara o ID
@@ -62,9 +63,9 @@ export default function Imovel() {
                     // Se for apenas o ID (string/number)
                     return String(fav) === String(id);
                 });
-                
+
                 setFavorito(isFavorito);
-                console.log('💖 Favorito?', isFavorito);
+
             } catch (error) {
                 console.error('Erro ao verificar favoritos:', error);
             }
@@ -81,7 +82,7 @@ export default function Imovel() {
 
         try {
             setLoadingFavorito(true);
-            
+
             const favoritosJSON = await AsyncStorage.getItem(FAVORITES_KEY);
             let favoritos = favoritosJSON ? JSON.parse(favoritosJSON) : [];
 
@@ -93,12 +94,12 @@ export default function Imovel() {
                     }
                     return String(fav) !== String(id);
                 });
-                
+
                 await AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(favoritos));
                 setFavorito(false);
-                
-                
-                
+
+
+
                 setModal({
                     visible: true,
                     title: 'Removido dos Favoritos',
@@ -116,13 +117,13 @@ export default function Imovel() {
                     banheiros: imovel.banheiros,
                     vagas: imovel.garagens
                 };
-                
+
                 favoritos.push(imovelFavorito);
                 await AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(favoritos));
                 setFavorito(true);
-                
-                
-                
+
+
+
                 setModal({
                     visible: true,
                     title: 'Adicionado aos Favoritos',
@@ -190,8 +191,9 @@ export default function Imovel() {
                 message={modal.message}
                 onConfirm={() => setModal({ visible: false, title: '', message: '' })}
             />
-            
+
             <ScrollView>
+                <Topo/>
                 {/* Imagem do imóvel */}
                 <View style={styles.imageContainer}>
                     <Image
@@ -205,7 +207,7 @@ export default function Imovel() {
                         locations={[0.6, 1]}
                     />
                     <View style={styles.overlay}>
-                        <TouchableOpacity 
+                        <TouchableOpacity
                             onPress={toggleFavorito}
                             disabled={loadingFavorito}
                             style={styles.favoritoButton}
@@ -213,10 +215,10 @@ export default function Imovel() {
                             {loadingFavorito ? (
                                 <ActivityIndicator size="small" color="#fff" />
                             ) : (
-                                <Ionicons 
-                                    name={favorito ? "heart" : "heart-outline"} 
-                                    size={32} 
-                                    color={favorito ? "#FF4444" : "#fff"} 
+                                <Ionicons
+                                    name={favorito ? "heart" : "heart-outline"}
+                                    size={32}
+                                    color={favorito ? "#FF4444" : "#fff"}
                                 />
                             )}
                         </TouchableOpacity>
@@ -248,11 +250,6 @@ export default function Imovel() {
                         <Link href={`/agendamento?imovel=${id}`} asChild>
                             <TouchableOpacity style={styles.button}>
                                 <Text style={styles.buttonText}>Agendar Visita</Text>
-                            </TouchableOpacity>
-                        </Link>
-                        <Link href="/home" asChild>
-                            <TouchableOpacity style={styles.button2}>
-                                <Text style={styles.buttonText2}>Contato</Text>
                             </TouchableOpacity>
                         </Link>
                     </View>
@@ -400,6 +397,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     button: {
+        width: '80%',
         backgroundColor: '#146FBA',
         paddingHorizontal: 20,
         paddingVertical: 15,
@@ -412,30 +410,10 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 4,
     },
-    button2: {
-        backgroundColor: '#F5F5F5',
-        paddingHorizontal: 20,
-        paddingVertical: 15,
-        borderRadius: 10,
-        alignItems: 'center',
-        justifyContent: 'center',
-        elevation: 4,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        borderWidth: 2,
-        borderColor: '#fff',
-    },
     buttonText: {
         fontSize: 12,
         fontWeight: "700",
         color: '#F5F5F5',
-    },
-    buttonText2: {
-        fontSize: 12,
-        fontWeight: "700",
-        color: '#375A76',
     },
     container_info: {
         width: '80%',
@@ -449,9 +427,10 @@ const styles = StyleSheet.create({
     },
     infoItem: {
         flexDirection: "row",
-        alignItems: "flex-end",
+        alignItems: "center", // ✔ ícone e texto ficam alinhados verticalmente
         gap: 10,
     },
+
     infoText: {
         fontSize: 16,
         color: '#375A76',
