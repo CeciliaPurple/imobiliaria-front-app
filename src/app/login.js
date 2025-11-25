@@ -26,8 +26,7 @@ export default function Login() {
         setLoading(true);
 
         try {
-            console.log('🚀 Iniciando login...');
-            console.log('📧 Email:', email);
+           
             
             const response = await fetch('http://localhost:3100/usuario/login', {
                 method: 'POST',
@@ -63,11 +62,11 @@ export default function Login() {
                 // Salvar no AsyncStorage
                 try {
                     await AsyncStorage.setItem('userData', JSON.stringify(userData));
-                    console.log('✅ Dados salvos no AsyncStorage!');
+                   
                     
                     // IMPORTANTE: Verificar se realmente salvou
                     const verificacao = await AsyncStorage.getItem('userData');
-                    console.log('🔍 Verificação - dados no storage:', verificacao);
+                
                     
                     if (!verificacao) {
                         console.error('❌ ERRO: Dados não foram salvos!');
@@ -86,7 +85,7 @@ export default function Login() {
                     return;
                 }
                 
-                console.log('🏠 Redirecionando para home...');
+                
                 
                 // Pequeno delay para garantir que salvou
                 setTimeout(() => {

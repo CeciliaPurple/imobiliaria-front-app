@@ -7,35 +7,80 @@ import {
     ActivityIndicator, 
     RefreshControl 
 } from "react-native";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useFocusEffect } from "@react-navigation/native";
+import { router } from "expo-router";
 import Topo from "../../components/Topo";
 import Imovel from "../../components/imovel";
+import ModalMensagem from "../../components/ModalMensagem";
+import { checkAuth } from "../../../Store/authHelper";
+import { useAuthStore } from "../../../Store/useAuthStore";
 
 export default function Home() {
     const [imoveis, setImoveis] = useState([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState(null);
+    const [modal, setModal] = useState({ visible: false, title: '', message: '', onConfirm: null });
+    const [showWelcome, setShowWelcome] = useState(false);
+    
+    // Pega dados do Zustand
+    const { profile, isLogged } = useAuthStore();
+
+    
+    useFocusEffect(
+        useCallback(() => {
+            verificarToken();
+        }, [])
+    );
+
+    const verificarToken = async () => {
+        const auth = await checkAuth();
+        
+        if (!auth.isAuthenticated && auth.expired) {
+            // 🚨 Token expirou - mostra mensagem
+            setModal({
+                visible: true,
+                title: 'Sessão Expirada',
+                message: 'Sua sessão expirou. Faça login novamente para continuar.',
+                onConfirm: () => {
+                    setModal({ visible: false, title: '', message: '', onConfirm: null });
+                    router.replace('/login');
+                }
+            });
+        }
+    };
 
     useEffect(() => {
         fetchImoveis();
-    }, []);
+        
+        // Mostra mensagem de boas-vindas ao logar
+        if (isLogged && profile) {
+            setShowWelcome(true);
+            
+            // Remove a mensagem após 3 segundos
+            const timer = setTimeout(() => {
+                setShowWelcome(false);
+            }, 3000);
+            
+            // Limpa o timer ao desmontar
+            return () => clearTimeout(timer);
+        }
+    }, [isLogged, profile]);
 
     const fetchImoveis = async () => {
         try {
             setLoading(true);
             setError(null);
             
-            
             const response = await fetch('http://localhost:3100/imoveis');
-            
             
             if (!response.ok) {
                 throw new Error('Erro ao buscar imóveis');
             }
             
             const data = await response.json();
-           
+            
             
             setImoveis(data);
         } catch (error) {
@@ -64,7 +109,13 @@ export default function Home() {
 
     return (
         <View style={styles.container}>
-          
+            {/* Modal de sessão expirada */}
+            <ModalMensagem
+                visible={modal.visible}
+                title={modal.title}
+                message={modal.message}
+                onConfirm={modal.onConfirm}
+            />
             
             {loading && !refreshing ? (
                 <View style={styles.loadingContainer}>
@@ -75,6 +126,7 @@ export default function Home() {
                 <View style={styles.errorContainer}>
                     <Text style={styles.errorText}>❌ {error}</Text>
                     <Text style={styles.errorSubtext}>
+                        Tente novamente mais tarde
                     </Text>
                 </View>
             ) : (
@@ -85,10 +137,22 @@ export default function Home() {
                             refreshing={refreshing}
                             onRefresh={onRefresh}
                             colors={["#146FBA"]}
+                            tintColor="#146FBA"
                         />
                     }
                 >
-                      <Topo />
+                    <Topo />
+                    
+                    {/* Saudação do usuário logado - aparece por 3 segundos */}
+                    {isLogged && profile && showWelcome && (
+                        <View style={styles.welcomeContainer}>
+                            <Text style={styles.welcomeText}>
+                                Olá, <Text style={styles.welcomeName}>{profile.nome}</Text>! 👋
+                            </Text>
+                            <Text style={styles.welcomeSubtext}>Seja bem-vindo !</Text>
+                        </View>
+                    )}
+                    
                     <ImageBackground
                         source={require("../../../assets/img/banner.png")}
                         style={styles.banner}
@@ -114,7 +178,7 @@ export default function Home() {
                                             quartos: imovel.quartos?.toString() || "0",
                                             banheiros: imovel.banheiros?.toString() || "0",
                                             vagas: imovel.garagens?.toString() || "0",
-                                            preco: imovel.valor || 0, // Sem formatação aqui
+                                            preco: imovel.valor || 0,
                                             imagem: imovel.foto || require("../../../assets/img/luxo.jpg"),
                                             favorito: imovel.favorito || false
                                         }}
@@ -146,7 +210,7 @@ export default function Home() {
                                             quartos: imovel.quartos?.toString() || "0",
                                             banheiros: imovel.banheiros?.toString() || "0",
                                             vagas: imovel.garagens?.toString() || "0",
-                                            preco: imovel.valor || 0, // Sem formatação aqui
+                                            preco: imovel.valor || 0,
                                             imagem: imovel.foto || require("../../../assets/img/luxo.jpg"),
                                             favorito: imovel.favorito || false
                                         }}
@@ -182,6 +246,35 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         overflow: "hidden",
+    },
+    welcomeContainer: {
+        backgroundColor: '#146FBA',
+        padding: 20,
+        marginHorizontal: 10,
+        marginTop: 10,
+        marginBottom: 10,
+        borderRadius: 15,
+        borderWidth: 2,
+        borderColor: '#fff',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 6,
+        elevation: 8,
+    },
+    welcomeText: {
+        fontSize: 22,
+        color: '#fff',
+        fontWeight: '600',
+    },
+    welcomeName: {
+        fontWeight: 'bold',
+        color: '#FFD700',
+    },
+    welcomeSubtext: {
+        fontSize: 14,
+        color: '#E3F2FF',
+        marginTop: 5,
     },
     container_destaque: {
         display: 'flex',

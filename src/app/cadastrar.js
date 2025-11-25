@@ -1,10 +1,9 @@
-import { Text, StyleSheet, ImageBackground, View, TextInput, TouchableOpacity } from "react-native"
-import { Image } from "expo-image"
-import { Link, router } from "expo-router"
+import { Text, StyleSheet, ImageBackground, View, TextInput, TouchableOpacity } from "react-native";
+import { Image } from "expo-image";
+import { Link, router } from "expo-router";
 import React from 'react';
 import Checkbox from 'expo-checkbox';
 import ModalMensagem from "../components/ModalMensagem";
-
 
 export default function Cadastrar() {
     const [name, setName] = React.useState('');
@@ -12,10 +11,11 @@ export default function Cadastrar() {
     const [senha, setSenha] = React.useState('');
     const [isChecked, setIsChecked] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
-    const [modal, setModal] = React.useState({ visible: false, title: '', message: '' });
+    const [modal, setModal] = React.useState({ visible: false, title: '', message: '', onConfirm: null });
 
-    const showAlert = (title, message) => {
-        setModal({ visible: true, title, message });
+    // Agora aceita callback corretamente
+    const showAlert = (title, message, onConfirm = null) => {
+        setModal({ visible: true, title, message, onConfirm });
     };
 
     const handleCadastro = async () => {
@@ -23,6 +23,7 @@ export default function Cadastrar() {
             showAlert('Erro', 'Por favor, preencha todos os campos.');
             return;
         }
+
         if (!isChecked) {
             showAlert('Termos de Uso', 'Você precisa aceitar os termos de uso para continuar.');
             return;
@@ -32,13 +33,11 @@ export default function Cadastrar() {
 
         try {
             const userData = {
-                nome: name,      
+                nome: name,
                 email: email,
-                senha: senha     
+                senha: senha
             };
 
-
-            
             const response = await fetch('http://localhost:3100/usuario', {
                 method: 'POST',
                 headers: {
@@ -47,24 +46,26 @@ export default function Cadastrar() {
                 body: JSON.stringify(userData)
             });
 
-            
-
             const data = await response.json();
-            console.log('Dados recebidos:', data);
-            
+          
+
             if (!response.ok) {
-               
-                const errorMessage = data.error || data.menssage || data.message || 'Erro ao cadastrar usuário';
+                const errorMessage = data.error || data.message || data.menssage || 'Erro ao cadastrar usuário';
                 showAlert('Erro no Cadastro', errorMessage);
-                throw new Error(errorMessage);
+                return;
             }
 
-            showAlert('Sucesso!', 'Cadastro realizado com sucesso. Você será redirecionado para o login.', () => {
-                setModal({ visible: false });
-                router.push('/login');
-            });
+            // Sucesso -> redireciona para login
+            showAlert(
+                'Sucesso!',
+                'Cadastro realizado com sucesso!',
+                () => {
+                    setModal({ visible: false });
+                    router.push('/login');
+                }
+            );
+
         } catch (error) {
-            // O erro já é tratado acima, mas caso haja um erro de rede, ele cairá aqui.
             if (!modal.visible) {
                 showAlert('Erro', 'Não foi possível conectar ao servidor. Tente novamente.');
             }
@@ -75,57 +76,51 @@ export default function Cadastrar() {
 
     return (
         <ImageBackground style={styles.container} source={require('../../assets/img/gradient2.png')} resizeMode="stretch">
+
             <ModalMensagem
                 visible={modal.visible}
                 title={modal.title}
                 message={modal.message}
                 onConfirm={modal.onConfirm || (() => setModal({ visible: false }))}
             />
+
             <Link style={styles.link} href={'/home'}>
                 <Image style={styles.logo} source={require('../../assets/img/villa-logo-img.png')} />
             </Link>
+
             <View style={styles.container_input}>
                 <Text style={styles.title}>Cadastro</Text>
-                {/*Campo Nome*/}
-                <View>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Nome de usuário"
-                        placeholderTextColor={'rgba(55, 90, 118, 0.5)'}
-                        value={name}
-                        onChangeText={setName}
-                        editable={!loading}
-                    />
-                </View>
 
-                {/*Campo Email*/}
-                <View>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Email"
-                        placeholderTextColor={'rgba(55, 90, 118, 0.5)'}
-                        value={email}
-                        onChangeText={setEmail}
-                        keyboardType="email-address"
-                        autoCapitalize="none"
-                        editable={!loading}
-                    />
-                </View>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Nome de usuário"
+                    placeholderTextColor={'rgba(55, 90, 118, 0.5)'}
+                    value={name}
+                    onChangeText={setName}
+                    editable={!loading}
+                />
 
-                {/*Campo Senha*/}
-                <View>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Senha"
-                        placeholderTextColor={'#375a76'}
-                        value={senha}
-                        onChangeText={setSenha}
-                        secureTextEntry={true}
-                        editable={!loading}
-                    />
-                </View>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Email"
+                    placeholderTextColor={'rgba(55, 90, 118, 0.5)'}
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    editable={!loading}
+                />
 
-                {/*Checkbox Termos*/}
+                <TextInput
+                    style={styles.input}
+                    placeholder="Senha"
+                    placeholderTextColor={'#375a76'}
+                    value={senha}
+                    onChangeText={setSenha}
+                    secureTextEntry={true}
+                    editable={!loading}
+                />
+
                 <View style={styles.checkboxContainer}>
                     <Checkbox
                         value={isChecked}
@@ -138,9 +133,8 @@ export default function Cadastrar() {
                     </Text>
                 </View>
 
-                {/*Botão*/}
-                <TouchableOpacity 
-                    style={styles.link} 
+                <TouchableOpacity
+                    style={styles.link}
                     onPress={handleCadastro}
                     disabled={loading}
                 >
@@ -155,28 +149,16 @@ export default function Cadastrar() {
             </Text>
 
         </ImageBackground>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         width: '100%',
-        display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: 50,
-    },
-    container_logo: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 100
-    },
-    text_logo: {
-        color: '#146FBA',
-        width: 250,
-        textAlign: 'center'
     },
     text: {
         color: '#375A76'
@@ -186,7 +168,6 @@ const styles = StyleSheet.create({
         height: 75
     },
     container_input: {
-        display: 'flex',
         gap: 30,
         marginBottom: 60
     },
@@ -203,19 +184,9 @@ const styles = StyleSheet.create({
         color: '#375A76',
         fontWeight: '500',
         padding: 5,
-        width: '70vw',
-    },
-    inputFocado: {
-        borderBottomColor: 'transparent'
-    },
-    container_group: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        gap: 20
+        width: '70vw'
     },
     link: {
-        width: 'fit-content',
         alignSelf: 'center',
     },
     btn: {
@@ -245,4 +216,4 @@ const styles = StyleSheet.create({
         color: '#375A76',
         fontSize: 14
     }
-})
+});
