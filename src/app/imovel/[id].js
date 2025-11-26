@@ -32,7 +32,6 @@ export default function Imovel() {
 
                 const data = await response.json();
 
-
                 setImovel(data.imovel || data);
                 setLoading(false);
             } catch (error) {
@@ -98,20 +97,18 @@ export default function Imovel() {
                 await AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(favoritos));
                 setFavorito(false);
 
-
-
                 setModal({
                     visible: true,
                     title: 'Removido dos Favoritos',
                     message: 'Este imóvel foi removido da sua lista de favoritos.'
                 });
             } else {
-                // Adicionar aos favoritos - salva o objeto completo
+                // ✅ CORRIGIDO: Adicionar aos favoritos usando fotoPrincipal
                 const imovelFavorito = {
                     id: imovel.id,
                     nome: imovel.titulo,
                     preco: imovel.valor,
-                    imagem: imovel.foto,
+                    imagem: imovel.fotoPrincipal,  // ✅ CORRIGIDO
                     area: imovel.metrosQuadrados,
                     quartos: imovel.quartos,
                     banheiros: imovel.banheiros,
@@ -121,8 +118,6 @@ export default function Imovel() {
                 favoritos.push(imovelFavorito);
                 await AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(favoritos));
                 setFavorito(true);
-
-
 
                 setModal({
                     visible: true,
@@ -194,10 +189,10 @@ export default function Imovel() {
 
             <ScrollView>
                 <Topo/>
-                {/* Imagem do imóvel */}
+                {/* Imagem do imóvel - ✅ CORRIGIDO */}
                 <View style={styles.imageContainer}>
                     <Image
-                        source={{ uri: imovel.foto }}
+                        source={{ uri: imovel.fotoPrincipal }}
                         style={styles.img}
                         resizeMode="cover"
                     />
@@ -427,7 +422,7 @@ const styles = StyleSheet.create({
     },
     infoItem: {
         flexDirection: "row",
-        alignItems: "center", // ✔ ícone e texto ficam alinhados verticalmente
+        alignItems: "center",
         gap: 10,
     },
 

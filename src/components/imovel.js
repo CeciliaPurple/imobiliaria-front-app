@@ -61,13 +61,20 @@ export default function Imovel({ data, onFavoritoChange }) {
     ? new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(data.preco)
     : "00.000,00";
 
+  // ✅ CORRIGIDO: Usa fotoPrincipal em vez de foto/imagem
+  const imagemUrl = data?.fotoPrincipal || data?.imagem || data?.foto;
+
   return (
     <View style={styles.card}>
       {/* Imagem + overlay */}
       <View style={styles.imgContainer}>
         <Image
           style={styles.img}
-          source={typeof data?.imagem === 'string' ? { uri: data.imagem } : data?.imagem || require("../../assets/img/luxo.jpg")}
+          source={
+            typeof imagemUrl === 'string' 
+              ? { uri: imagemUrl } 
+              : imagemUrl || require("../../assets/img/luxo.jpg")
+          }
         />
 
         <LinearGradient
@@ -79,7 +86,7 @@ export default function Imovel({ data, onFavoritoChange }) {
         <View style={styles.overlay}>
           <Link href={`/imovel/${data?.id}`} asChild>
             <TouchableOpacity style={styles.nameLink}>
-              <Text style={styles.name} numberOfLines={1}>{data?.nome || "Nome do Imóvel"}</Text>
+              <Text style={styles.name} numberOfLines={1}>{data?.nome || data?.titulo || "Nome do Imóvel"}</Text>
             </TouchableOpacity>
           </Link>
           <TouchableOpacity onPress={handleToggleFavorite} style={styles.favoritoButton}>
@@ -96,7 +103,7 @@ export default function Imovel({ data, onFavoritoChange }) {
       <View style={styles.info}>
         <View style={styles.infoItem}>
           <Ionicons name="home-outline" size={16} color="#375A76" />
-          <Text style={styles.infoText}>{data?.area || "000"}m²</Text>
+          <Text style={styles.infoText}>{data?.area || data?.metrosQuadrados || "000"}m²</Text>
         </View>
         <View style={styles.infoItem}>
           <Ionicons name="bed-outline" size={16} color="#375A76" />
@@ -108,7 +115,7 @@ export default function Imovel({ data, onFavoritoChange }) {
         </View>
         <View style={styles.infoItem}>
           <Ionicons name="car-outline" size={16} color="#375A76" />
-          <Text style={styles.infoText}>{data?.vagas || "0"}</Text>
+          <Text style={styles.infoText}>{data?.vagas || data?.garagens || "0"}</Text>
         </View>
       </View>
 

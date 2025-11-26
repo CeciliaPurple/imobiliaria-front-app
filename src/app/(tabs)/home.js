@@ -1,11 +1,11 @@
-import { 
-    View, 
-    Text, 
-    StyleSheet, 
-    ImageBackground, 
-    ScrollView, 
-    ActivityIndicator, 
-    RefreshControl 
+import {
+    View,
+    Text,
+    StyleSheet,
+    ImageBackground,
+    ScrollView,
+    ActivityIndicator,
+    RefreshControl
 } from "react-native";
 import React, { useState, useEffect, useCallback } from 'react';
 import { useFocusEffect } from "@react-navigation/native";
@@ -23,11 +23,11 @@ export default function Home() {
     const [error, setError] = useState(null);
     const [modal, setModal] = useState({ visible: false, title: '', message: '', onConfirm: null });
     const [showWelcome, setShowWelcome] = useState(false);
-    
+
     // Pega dados do Zustand
     const { profile, isLogged } = useAuthStore();
 
-    
+
     useFocusEffect(
         useCallback(() => {
             verificarToken();
@@ -36,7 +36,7 @@ export default function Home() {
 
     const verificarToken = async () => {
         const auth = await checkAuth();
-        
+
         if (!auth.isAuthenticated && auth.expired) {
             // 🚨 Token expirou - mostra mensagem
             setModal({
@@ -53,16 +53,16 @@ export default function Home() {
 
     useEffect(() => {
         fetchImoveis();
-        
+
         // Mostra mensagem de boas-vindas ao logar
         if (isLogged && profile) {
             setShowWelcome(true);
-            
+
             // Remove a mensagem após 3 segundos
             const timer = setTimeout(() => {
                 setShowWelcome(false);
             }, 3000);
-            
+
             // Limpa o timer ao desmontar
             return () => clearTimeout(timer);
         }
@@ -72,16 +72,16 @@ export default function Home() {
         try {
             setLoading(true);
             setError(null);
-            
+
             const response = await fetch('http://localhost:3100/imoveis');
-            
+
             if (!response.ok) {
                 throw new Error('Erro ao buscar imóveis');
             }
-            
+
             const data = await response.json();
-            
-            
+
+
             setImoveis(data);
         } catch (error) {
             console.error('❌ Erro ao buscar imóveis:', error);
@@ -116,7 +116,7 @@ export default function Home() {
                 message={modal.message}
                 onConfirm={modal.onConfirm}
             />
-            
+
             {loading && !refreshing ? (
                 <View style={styles.loadingContainer}>
                     <ActivityIndicator size="large" color="#146FBA" />
@@ -130,7 +130,7 @@ export default function Home() {
                     </Text>
                 </View>
             ) : (
-                <ScrollView 
+                <ScrollView
                     style={styles.container}
                     refreshControl={
                         <RefreshControl
@@ -142,7 +142,7 @@ export default function Home() {
                     }
                 >
                     <Topo />
-                    
+
                     {/* Saudação do usuário logado - aparece por 3 segundos */}
                     {isLogged && profile && showWelcome && (
                         <View style={styles.welcomeContainer}>
@@ -152,7 +152,8 @@ export default function Home() {
                             <Text style={styles.welcomeSubtext}>Seja bem-vindo !</Text>
                         </View>
                     )}
-                    
+
+
                     <ImageBackground
                         source={require("../../../assets/img/banner.png")}
                         style={styles.banner}
@@ -161,7 +162,7 @@ export default function Home() {
                     {/* Destaques */}
                     <View style={styles.container_destaque}>
                         <Text style={styles.title}>Destaques</Text>
-                        
+
                         {imoveisDestaque.length > 0 ? (
                             <ScrollView
                                 horizontal
@@ -169,17 +170,17 @@ export default function Home() {
                                 showsHorizontalScrollIndicator={false}
                             >
                                 {imoveisDestaque.map((imovel) => (
-                                    <Imovel 
+                                    <Imovel
                                         key={imovel.id}
                                         data={{
-                                            id: imovel.id, 
+                                            id: imovel.id,
                                             nome: imovel.titulo,
                                             area: imovel.metrosQuadrados?.toString() || "0",
                                             quartos: imovel.quartos?.toString() || "0",
                                             banheiros: imovel.banheiros?.toString() || "0",
                                             vagas: imovel.garagens?.toString() || "0",
                                             preco: imovel.valor || 0,
-                                            imagem: imovel.foto || require("../../../assets/img/luxo.jpg"),
+                                            imagem: imovel.fotoPrincipal || require("../../../assets/img/luxo.jpg"),
                                             favorito: imovel.favorito || false
                                         }}
                                     />
@@ -193,7 +194,7 @@ export default function Home() {
                     {/* Lançamentos */}
                     <View style={styles.container_destaque}>
                         <Text style={styles.title}>Lançamentos</Text>
-                        
+
                         {imoveisLancamentos.length > 0 ? (
                             <ScrollView
                                 horizontal
@@ -201,17 +202,17 @@ export default function Home() {
                                 showsHorizontalScrollIndicator={false}
                             >
                                 {imoveisLancamentos.map((imovel) => (
-                                    <Imovel 
+                                    <Imovel
                                         key={imovel.id}
                                         data={{
-                                            id: imovel.id, 
+                                            id: imovel.id,
                                             nome: imovel.titulo,
                                             area: imovel.metrosQuadrados?.toString() || "0",
                                             quartos: imovel.quartos?.toString() || "0",
                                             banheiros: imovel.banheiros?.toString() || "0",
                                             vagas: imovel.garagens?.toString() || "0",
                                             preco: imovel.valor || 0,
-                                            imagem: imovel.foto || require("../../../assets/img/luxo.jpg"),
+                                            imagem: imovel.fotoPrincipal || require("../../../assets/img/luxo.jpg"),
                                             favorito: imovel.favorito || false
                                         }}
                                     />

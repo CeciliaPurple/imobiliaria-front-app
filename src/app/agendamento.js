@@ -1,3 +1,4 @@
+
 import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, Platform } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { useState, useEffect } from "react";
@@ -94,16 +95,22 @@ export default function Agenda() {
             }
 
             const result = await response.json();
-            
 
             // A API retorna um objeto com 'agendamentos' dentro
             const data = result.agendamentos || result;
+
+            // ✅ CORREÇÃO: Extrair apenas a data sem conversão de timezone
+            let dataFormatada = "";
+            if (data.dataVisita) {
+                // Pega apenas a parte da data (YYYY-MM-DD) sem conversão
+                dataFormatada = data.dataVisita.split("T")[0];
+            }
 
             // Preencher o formulário com os dados recebidos
             setFormData({
                 nome: data.usuario?.nome || user?.nome || "",
                 email: data.usuario?.email || user?.email || "",
-                dataVisita: data.dataVisita ? data.dataVisita.split("T")[0] : "",
+                dataVisita: dataFormatada,
                 horario: data.horario || "",
                 observacoes: data.observacoes || ""
             });
@@ -113,9 +120,10 @@ export default function Agenda() {
                 setTelefone(formatarTelefone(data.telefone));
             }
 
-            // Atualizar o selectedDate para o DatePicker
-            if (data.dataVisita) {
-                setSelectedDate(new Date(data.dataVisita));
+            // ✅ CORREÇÃO: Criar data local sem conversão de timezone
+            if (dataFormatada) {
+                const [ano, mes, dia] = dataFormatada.split('-');
+                setSelectedDate(new Date(ano, mes - 1, dia));
             }
 
         } catch (err) {
@@ -145,7 +153,11 @@ export default function Agenda() {
         setShowDatePicker(false);
         if (date) {
             setSelectedDate(date);
-            setFormData(prev => ({ ...prev, dataVisita: date.toISOString().split("T")[0] }));
+            // ✅ CORREÇÃO: Formatar data localmente sem conversão de timezone
+            const ano = date.getFullYear();
+            const mes = String(date.getMonth() + 1).padStart(2, '0');
+            const dia = String(date.getDate()).padStart(2, '0');
+            setFormData(prev => ({ ...prev, dataVisita: `${ano}-${mes}-${dia}` }));
         }
     };
 
@@ -183,15 +195,21 @@ export default function Agenda() {
         setLoading(true);
 
         try {
+            // ✅ CORREÇÃO: Enviar data no formato correto sem conversão de timezone
+            // Formato: YYYY-MM-DDT12:00:00.000Z (meio-dia UTC para evitar deslocamento para o dia anterior)
+            const dataVisitaFormatada = `${formData.dataVisita}T12:00:00.000Z`;
+
             const payload = {
                 usuarioId: user.id,
                 imovelId,
-                dataVisita: new Date(formData.dataVisita).toISOString(),
+                dataVisita: dataVisitaFormatada,
                 horario: formData.horario,
                 telefone: telefone.replace(/\D/g, ""),
                 observacoes: formData.observacoes,
                 status: "pendente"
             };
+
+            console.log('📤 Enviando payload:', payload);
 
             const url = isEdit
                 ? `http://localhost:3100/agenda/${editId}`
@@ -291,7 +309,9 @@ export default function Agenda() {
                                 onPress={() => setShowDatePicker(true)}
                             >
                                 <Text style={formData.dataVisita ? styles.inputText : styles.placeholder}>
-                                    {formData.dataVisita || "Selecione a data"}
+                                    {formData.dataVisita ? 
+                                        new Date(formData.dataVisita + 'T12:00:00').toLocaleDateString('pt-BR') : 
+                                        "Selecione a data"}
                                 </Text>
                             </TouchableOpacity>
                             {showDatePicker && (
@@ -458,7 +478,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         backgroundColor: "#FFF",
         color: "#375A76",
-        fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif', // Garante a mesma família de fonte
+        fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
     },
     textArea: {
         height: 100,

@@ -32,7 +32,6 @@ export default function Filtro() {
 
     const buscarImoveis = async () => {
         try {
-   
             setLoading(true);
 
             const response = await fetch('http://localhost:3100/imoveis');
@@ -43,8 +42,6 @@ export default function Filtro() {
 
             const data = await response.json();
             const imoveisData = data.imovel || [];
-
-       
             
             setImoveis(imoveisData);
             setImoveisFiltrados(imoveisData);
@@ -154,7 +151,6 @@ export default function Filtro() {
     };
 
     const limparFiltros = () => {
-       
         const filtrosVazios = {
             localizacao: '',
             tipos: [],
@@ -212,7 +208,6 @@ export default function Filtro() {
     return (
         <View style={styles.container}>
             
-            
             <ModalFiltros 
                 visible={modalVisible} 
                 onClose={() => setModalVisible(false)} 
@@ -221,7 +216,6 @@ export default function Filtro() {
             />
 
             <ScrollView 
-            
                 style={styles.container_scroll}
                 refreshControl={
                     <RefreshControl
@@ -277,7 +271,7 @@ export default function Filtro() {
                                     banheiros: imovel.banheiros,
                                     vagas: imovel.garagens,
                                     preco: imovel.valor,
-                                    imagem: imovel.foto
+                                    imagem: imovel.fotoPrincipal  // ✅ CORRIGIDO
                                 }}
                             />
                         ))

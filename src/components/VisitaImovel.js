@@ -30,10 +30,14 @@ export default function VisitaImovel({ visita, onCancel }) {
 
     const imovel = visita.imovel || {};
 
+    // ✅ FUNÇÃO DE DATA CORRIGIDA (SEM UTC, SEM NEW DATE)
     const formatData = (data) => {
         if (!data) return "--/--/----";
-        const d = new Date(data);
-        return d.toLocaleDateString("pt-BR");
+
+        // Garante formato YYYY-MM-DD mesmo que venha com T
+        const [ano, mes, dia] = data.split("T")[0].split("-");
+
+        return `${dia}/${mes}/${ano}`;
     };
 
     const formatTelefone = (tel) => {
@@ -55,7 +59,6 @@ export default function VisitaImovel({ visita, onCancel }) {
         return colors[status] || "#777";
     };
 
-    // 🔥 EXCLUIR VISITA DE VERDADE (DELETE)
     const confirmarCancelamento = async () => {
         try {
             const token = await AsyncStorage.getItem("userToken");
@@ -70,7 +73,6 @@ export default function VisitaImovel({ visita, onCancel }) {
             if (response.ok) {
                 setModalVisible(false);
 
-                // 🔥 remove instantaneamente do front
                 if (onCancel) onCancel(visita.id);
 
                 return;
@@ -92,9 +94,10 @@ export default function VisitaImovel({ visita, onCancel }) {
                 message={modalMsg.message}
                 onConfirm={() => setModalMsg({ visible: false, title: '', message: '' })}
             />
+
             {/* FOTO */}
-            {imovel.foto ? (
-                <Image source={{ uri: imovel.foto }} style={styles.foto} />
+            {imovel.fotoPrincipal ? (
+                <Image source={{ uri: imovel.fotoPrincipal }} style={styles.foto} />
             ) : (
                 <View style={[styles.foto, styles.fotoPlaceholder]}>
                     <Text style={{ color: "#999" }}>Sem imagem</Text>
@@ -281,7 +284,6 @@ const styles = StyleSheet.create({
         fontWeight: "500",
     },
 
-    /* MODAL */
     modalBackground: {
         flex: 1,
         backgroundColor: "rgba(0,0,0,0.5)",
