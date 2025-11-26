@@ -8,10 +8,34 @@ export default function Visitas() {
     const [visitas, setVisitas] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [ultimoImovel, setUltimoImovel] = useState(null);
 
     useEffect(() => {
         carregarVisitas();
+        carregarUltimoImovel();
     }, []);
+
+    const carregarUltimoImovel = async () => {
+        try {
+            const user = await AsyncStorage.getItem("userData");
+            if (!user) return;
+
+            const userObj = JSON.parse(user);
+            const chave = `ultimoImovel_${userObj.id}`;
+            const chaveExibicao = `ultimoImovelExibido_${userObj.id}`;
+
+            const jaExibiu = await AsyncStorage.getItem(chaveExibicao);
+            const salvo = await AsyncStorage.getItem(chave);
+
+            // ❗ Só mostrar uma vez quando logar
+            if (!jaExibiu && salvo) {
+                setUltimoImovel(JSON.parse(salvo));
+                await AsyncStorage.setItem(chaveExibicao, "true");
+            }
+        } catch (err) {
+            console.log("Erro ao carregar último imóvel:", err);
+        }
+    };
 
     const carregarVisitas = async () => {
         try {
@@ -38,7 +62,17 @@ export default function Visitas() {
             }
 
             const data = await response.json();
-            setVisitas(data.agendamentos ?? data);
+            const lista = data.agendamentos ?? data;
+
+            // 🔥 PRIORIDADE: pendentes primeiro
+            const pendentes = lista.filter(v => v.status === "pendente");
+            const outros = lista.filter(v => v.status !== "pendente");
+
+            const organizado = [...pendentes, ...outros];
+
+            // 🔥 LIMITA A 4 VISITAS
+            setVisitas(organizado.slice(0, 4));
+
         } catch (e) {
             console.log(e);
             setError(e.message);
@@ -74,8 +108,18 @@ export default function Visitas() {
     return (
         <View style={styles.container}>
             <ScrollView showsVerticalScrollIndicator={false}>
-                 <Topo />
+                <Topo />
+
                 <Text style={styles.title}>Minhas Visitas</Text>
+
+                {/* 🔥 MOSTRAR ÚLTIMO IMÓVEL VISTO (apenas 1 vez) */}
+                {ultimoImovel && (
+                    <View style={styles.lastCard}>
+                        <Text style={styles.lastTitle}>Último imóvel visualizado</Text>
+
+                        <VisitaImovel visita={ultimoImovel} onCancel={() => {}} />
+                    </View>
+                )}
 
                 <View style={styles.container_visita}>
                     {visitas.length === 0 ? (
@@ -87,8 +131,6 @@ export default function Visitas() {
                             <VisitaImovel
                                 key={visita.id}
                                 visita={visita}
-
-                                // 🔥 Dispara quando a visita é cancelada
                                 onCancel={() => removerDaLista(visita.id)}
                             />
                         ))
@@ -124,6 +166,20 @@ const styles = StyleSheet.create({
         alignItems: "center",
         gap: 20,
         marginBottom: 60,
+    },
+
+    lastCard: {
+        padding: 10,
+        marginBottom: 20,
+        width: "100%",
+        alignItems: "center",
+    },
+
+    lastTitle: {
+        fontSize: 18,
+        fontWeight: "bold",
+        marginBottom: 10,
+        color: "#375A76",
     },
 
     center: {

@@ -22,11 +22,8 @@ export default function Home() {
     const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState(null);
     const [modal, setModal] = useState({ visible: false, title: '', message: '', onConfirm: null });
-    const [showWelcome, setShowWelcome] = useState(false);
 
-    // Pega dados do Zustand
     const { profile, isLogged } = useAuthStore();
-
 
     useFocusEffect(
         useCallback(() => {
@@ -38,7 +35,6 @@ export default function Home() {
         const auth = await checkAuth();
 
         if (!auth.isAuthenticated && auth.expired) {
-            // 🚨 Token expirou - mostra mensagem
             setModal({
                 visible: true,
                 title: 'Sessão Expirada',
@@ -53,20 +49,7 @@ export default function Home() {
 
     useEffect(() => {
         fetchImoveis();
-
-        // Mostra mensagem de boas-vindas ao logar
-        if (isLogged && profile) {
-            setShowWelcome(true);
-
-            // Remove a mensagem após 3 segundos
-            const timer = setTimeout(() => {
-                setShowWelcome(false);
-            }, 3000);
-
-            // Limpa o timer ao desmontar
-            return () => clearTimeout(timer);
-        }
-    }, [isLogged, profile]);
+    }, []);
 
     const fetchImoveis = async () => {
         try {
@@ -80,7 +63,6 @@ export default function Home() {
             }
 
             const data = await response.json();
-
 
             setImoveis(data);
         } catch (error) {
@@ -109,7 +91,6 @@ export default function Home() {
 
     return (
         <View style={styles.container}>
-            {/* Modal de sessão expirada */}
             <ModalMensagem
                 visible={modal.visible}
                 title={modal.title}
@@ -143,23 +124,11 @@ export default function Home() {
                 >
                     <Topo />
 
-                    {/* Saudação do usuário logado - aparece por 3 segundos */}
-                    {isLogged && profile && showWelcome && (
-                        <View style={styles.welcomeContainer}>
-                            <Text style={styles.welcomeText}>
-                                Olá, <Text style={styles.welcomeName}>{profile.nome}</Text>! 👋
-                            </Text>
-                            <Text style={styles.welcomeSubtext}>Seja bem-vindo !</Text>
-                        </View>
-                    )}
-
-
                     <ImageBackground
                         source={require("../../../assets/img/banner.png")}
                         style={styles.banner}
                     />
 
-                    {/* Destaques */}
                     <View style={styles.container_destaque}>
                         <Text style={styles.title}>Destaques</Text>
 
@@ -191,7 +160,6 @@ export default function Home() {
                         )}
                     </View>
 
-                    {/* Lançamentos */}
                     <View style={styles.container_destaque}>
                         <Text style={styles.title}>Lançamentos</Text>
 
@@ -247,35 +215,6 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         overflow: "hidden",
-    },
-    welcomeContainer: {
-        backgroundColor: '#146FBA',
-        padding: 20,
-        marginHorizontal: 10,
-        marginTop: 10,
-        marginBottom: 10,
-        borderRadius: 15,
-        borderWidth: 2,
-        borderColor: '#fff',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 6,
-        elevation: 8,
-    },
-    welcomeText: {
-        fontSize: 22,
-        color: '#fff',
-        fontWeight: '600',
-    },
-    welcomeName: {
-        fontWeight: 'bold',
-        color: '#FFD700',
-    },
-    welcomeSubtext: {
-        fontSize: 14,
-        color: '#E3F2FF',
-        marginTop: 5,
     },
     container_destaque: {
         display: 'flex',

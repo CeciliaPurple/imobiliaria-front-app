@@ -30,13 +30,20 @@ export default function VisitaImovel({ visita, onCancel }) {
 
     const imovel = visita.imovel || {};
 
-    // ✅ FUNÇÃO DE DATA CORRIGIDA (SEM UTC, SEM NEW DATE)
+    // 🔥 VERIFICA SE A VISITA PODE EDITAR / CANCELAR
+    const isPendente = visita.status === "pendente";
+
+    // 🔥 BLOQUEAR E MOSTRAR MENSAGEM IGUAL AO WEB
+    const bloquearAcao = () => {
+        showAlert(
+            "Ação não permitida",
+            "Você só pode editar ou cancelar visitas com status PENDENTE."
+        );
+    };
+
     const formatData = (data) => {
         if (!data) return "--/--/----";
-
-        // Garante formato YYYY-MM-DD mesmo que venha com T
         const [ano, mes, dia] = data.split("T")[0].split("-");
-
         return `${dia}/${mes}/${ano}`;
     };
 
@@ -72,9 +79,7 @@ export default function VisitaImovel({ visita, onCancel }) {
 
             if (response.ok) {
                 setModalVisible(false);
-
                 if (onCancel) onCancel(visita.id);
-
                 return;
             }
 
@@ -88,6 +93,7 @@ export default function VisitaImovel({ visita, onCancel }) {
     return (
         <View style={styles.card}>
 
+            {/* Modal de Mensagem */}
             <ModalMensagem
                 visible={modalMsg.visible}
                 title={modalMsg.title}
@@ -104,7 +110,7 @@ export default function VisitaImovel({ visita, onCancel }) {
                 </View>
             )}
 
-            {/* TÍTULO */}
+            {/* Título */}
             <Text style={styles.titulo}>{imovel.titulo || "Imóvel sem título"}</Text>
 
             {/* DATA + HORA */}
@@ -130,25 +136,36 @@ export default function VisitaImovel({ visita, onCancel }) {
 
             {/* BOTÕES */}
             <View style={styles.buttons}>
+
+                {/* BOTÃO EDITAR */}
                 <TouchableOpacity
-                    style={[styles.btn, styles.btnEdit]}
-                    onPress={() => router.push(`/agendamento?edit=${visita.id}`)}
+                    style={[styles.btn, isPendente ? styles.btnEdit : styles.btnDisabled]}
+                    onPress={() => {
+                        if (!isPendente) return bloquearAcao();
+                        router.push(`/agendamento?edit=${visita.id}`);
+                    }}
                 >
-                    <Text style={styles.btnText}>Editar</Text>
+                    <Text style={styles.btnText}>
+                        {isPendente ? "Editar" : "Bloqueado"}
+                    </Text>
                 </TouchableOpacity>
 
+                {/* BOTÃO CANCELAR */}
                 <TouchableOpacity
-                    style={[styles.btn, styles.btnCancel]}
+                    style={[styles.btn, isPendente ? styles.btnCancel : styles.btnDisabled]}
                     onPress={() => {
+                        if (!isPendente) return bloquearAcao();
                         blurActiveElement();
                         setModalVisible(true);
                     }}
                 >
-                    <Text style={styles.btnText}>Cancelar</Text>
+                    <Text style={styles.btnText}>
+                        {isPendente ? "Cancelar" : "Indisponível"}
+                    </Text>
                 </TouchableOpacity>
             </View>
 
-            {/* MODAL */}
+            {/* MODAL CONFIRMAR CANCELAMENTO */}
             <Modal transparent visible={modalVisible} animationType="fade">
                 <View style={styles.modalBackground}>
                     <View style={styles.modalBox}>
@@ -255,6 +272,7 @@ const styles = StyleSheet.create({
     statusText: {
         fontSize: 15,
         color: "#333",
+        textTransform: "capitalize",
     },
 
     buttons: {
@@ -276,6 +294,11 @@ const styles = StyleSheet.create({
 
     btnCancel: {
         backgroundColor: "#6C757D",
+    },
+
+    btnDisabled: {
+        backgroundColor: "#b0b0b0",
+        marginRight: 10,
     },
 
     btnText: {
